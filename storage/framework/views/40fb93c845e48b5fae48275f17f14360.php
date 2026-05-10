@@ -13,38 +13,9 @@
     $currentTitle = $pageTitles[Route::currentRouteName()] ?? 'Dashboard masyarakat';
 ?>
 
-<header class="app-header">
-    <div class="topbar">
-        <div class="topbar-left">
-            <p class="header-eyebrow"><?php echo e($currentTitle); ?></p>
-
-            <div class="topbar-brand">
-                <span class="header-logo">S</span>
-                <h1>SENTINEL PUBLIC SAFETY</h1>
-            </div>
-        </div>
+<header class="flex items-center w-full h-14 px-6 bg-slate-900 text-white shadow-sm z-10 relative">
+    <div class="flex items-center gap-3">
+        <i class="fa-solid fa-shield-halved text-orange-500 text-lg"></i>
+        <h1 class="text-sm font-bold tracking-widest uppercase">Sentinel Public Safety</h1>
     </div>
-
-    <section class="situation-strip" aria-label="Ringkasan situasi">
-        <div class="situation-card location-card">
-            <span class="card-kicker">Cakupan Wilayah</span>
-            <strong>Jakarta Pusat, DKI Jakarta</strong>
-            <small>Pembaruan terakhir: 2 menit yang lalu</small>
-        </div>
-
-        <div class="situation-card status-card">
-            <span class="status-pulse"></span>
-            <div>
-                <span class="card-kicker">Status Wilayah</span>
-                <strong>Aman</strong>
-            </div>
-        </div>
-
-        <div class="situation-card ai-card">
-            <span class="card-kicker">Rekomendasi AI</span>
-            <strong>Situasi terkendali</strong>
-            <small>Gunakan peta evakuasi saat kondisi berubah.</small>
-        </div>
-    </section>
-</header>
-<?php /**PATH Z:\internet_download\Kuliah Alif\SEMESTER 4\MANPROSI\disaster_alert_app\resources\views/components/header.blade.php ENDPATH**/ ?>
+</header><?php /**PATH Z:\internet_download\Kuliah Alif\SEMESTER 4\MANPROSI\disaster_alert_app\resources\views/components/header.blade.php ENDPATH**/ ?>
