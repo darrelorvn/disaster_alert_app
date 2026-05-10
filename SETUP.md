@@ -25,7 +25,23 @@ cd disaster_alert_app
 
 ---
 
-# 2. Install Dependency Backend
+# 2. Create a New Branch
+
+Sebelum mulai development, buat branch baru sesuai fitur atau task yang dikerjakan.
+
+```bash
+git checkout -b feature/<branch-name>
+```
+
+Contoh:
+
+```bash
+git checkout -b feature/login-page
+```
+
+---
+
+# 3. Install Dependency Backend
 
 ```bash
 composer install
@@ -33,7 +49,7 @@ composer install
 
 ---
 
-# 3. Setup Environment
+# 4. Setup Environment
 
 ## Windows
 
@@ -49,7 +65,7 @@ cp .env.example .env
 
 ---
 
-# 4. Generate Application Key
+# 5. Generate Application Key
 
 ```bash
 php artisan key:generate
@@ -57,7 +73,7 @@ php artisan key:generate
 
 ---
 
-# 5. Setup Database
+# 6. Setup Database
 
 Buat database baru di MySQL, misalnya:
 
@@ -78,7 +94,7 @@ DB_PASSWORD=
 
 ---
 
-# 6. Jalankan Migration
+# 7. Jalankan Migration
 
 ```bash
 php artisan migrate
@@ -86,7 +102,7 @@ php artisan migrate
 
 ---
 
-# 7. Install Dependency Frontend
+# 8. Install Dependency Frontend
 
 ```bash
 npm install
@@ -94,7 +110,7 @@ npm install
 
 ---
 
-# 8. Menjalankan Backend Laravel
+# 9. Menjalankan Backend Laravel
 
 ```bash
 php artisan serve
@@ -108,7 +124,7 @@ http://127.0.0.1:8000
 
 ---
 
-# 9. Menjalankan Frontend Vite
+# 10. Menjalankan Frontend Vite
 
 Buka terminal baru lalu jalankan:
 
