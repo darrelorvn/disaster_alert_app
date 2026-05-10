@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class EvacuationRoute extends Model
 {
 
-
     protected $fillable = ['name','disaster_type','status','area','start_latitude','start_longitude','end_latitude','end_longitude','distance_km','description'];
 
 protected $casts = [

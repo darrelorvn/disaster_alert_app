@@ -1,4 +1,4 @@
-@php
+<?php
     $routeName = Route::currentRouteName();
     $isOfficer = str_starts_with((string) $routeName, 'officer.');
 
@@ -17,26 +17,26 @@
     ];
 
     $menus = $isOfficer ? $officerMenus : $userMenus;
-@endphp
+?>
 
 <aside class="flex flex-col w-64 h-full bg-slate-800 text-gray-400">
     
     <nav class="flex-1 py-4" aria-label="Navigasi utama">
         <ul class="space-y-1">
-            @foreach ($menus as $menu)
-                @php
+            <?php $__currentLoopData = $menus; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
                     $isActive = in_array($routeName, $menu['match'], true);
-                @endphp
+                ?>
 
                 <li>
-                    <a href="{{ route($menu['route']) }}" 
+                    <a href="<?php echo e(route($menu['route'])); ?>" 
                         class="flex items-center gap-4 px-6 py-3 text-sm transition-colors duration-200 
-                            {{ $isActive ? 'bg-slate-700 text-orange-500 border-r-2 border-orange-500' : 'hover:bg-slate-700 hover:text-gray-200' }}">
-                        <i class="{{ $menu['icon'] }} w-5 text-center {{ $isActive ? 'text-orange-500' : 'text-gray-400' }}"></i>
-                        <span>{{ $menu['label'] }}</span>
+                            <?php echo e($isActive ? 'bg-slate-700 text-orange-500 border-r-2 border-orange-500' : 'hover:bg-slate-700 hover:text-gray-200'); ?>">
+                        <i class="<?php echo e($menu['icon']); ?> w-5 text-center <?php echo e($isActive ? 'text-orange-500' : 'text-gray-400'); ?>"></i>
+                        <span><?php echo e($menu['label']); ?></span>
                     </a>
                 </li>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ul>
     </nav>
 
@@ -50,4 +50,4 @@
             <span>Support</span>
         </a>
     </div>
-</aside>
+</aside><?php /**PATH Z:\internet_download\Kuliah Alif\SEMESTER 4\MANPROSI\disaster_alert_app\resources\views/components/sidebar.blade.php ENDPATH**/ ?>
