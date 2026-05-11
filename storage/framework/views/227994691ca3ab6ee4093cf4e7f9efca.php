@@ -1,6 +1,6 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="flex-1 bg-[#F8FAFC] overflow-y-auto font-sans antialiased">
     
     <div class="px-12 pt-10 pb-6">
@@ -111,4 +111,5 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\disaster_alert_app\disaster_alert_app\resources\views/pages/user/report-disaster.blade.php ENDPATH**/ ?>
