@@ -1,6 +1,6 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-slate-50 p-8 font-sans text-slate-800">
     <div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div class="flex items-center gap-2">
@@ -224,4 +224,5 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH Z:\internet_download\Kuliah Alif\SEMESTER 4\MANPROSI\disaster_alert_app\resources\views/pages/officer/home.blade.php ENDPATH**/ ?>
