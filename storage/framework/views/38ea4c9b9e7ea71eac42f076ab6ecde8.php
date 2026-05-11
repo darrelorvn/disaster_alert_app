@@ -1,6 +1,6 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="flex h-screen bg-white overflow-hidden font-sans antialiased">
     
     <div class="flex-1 relative bg-[#F1F5F9]">
@@ -147,4 +147,5 @@
         50% { opacity: 0.2; }
     }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\disaster_alert_app\disaster_alert_app\resources\views/pages/user/map-evacuation.blade.php ENDPATH**/ ?>
