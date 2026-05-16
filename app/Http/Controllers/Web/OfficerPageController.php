@@ -12,7 +12,7 @@ class OfficerPageController extends Controller
 }
 public function manageData()
 {
-    return view('pages.officer.manage-data');
+    return view('pages.officer.kelola-data.manage-data');
 }
 public function profile()
 {

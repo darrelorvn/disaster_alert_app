@@ -21,3 +21,16 @@ Route::prefix('petugas')->name('officer.')->group(function (): void {
     Route::get('/kelola-data', [OfficerPageController::class, 'manageData'])->name('manage-data');
     Route::get('/profil', [OfficerPageController::class, 'profile'])->name('profile');
 });
+
+use App\Http\Controllers\Web\Officer\KelolaDataController;
+
+// ... route lainnya ...
+
+// Pastikan ini nantinya dibungkus dengan middleware auth & role:officer
+Route::prefix('petugas/kelola-data')->name('officer.kelola-data.')->group(function () {
+    Route::get('/laporan', [KelolaDataController::class, 'laporan'])->name('laporan');
+    Route::get('/evakuasi', [KelolaDataController::class, 'evakuasi'])->name('evakuasi');
+    Route::get('/shelter', [KelolaDataController::class, 'shelter'])->name('shelter');
+    Route::get('/faskes', [KelolaDataController::class, 'faskes'])->name('faskes');
+    Route::get('/penanggulangan', [KelolaDataController::class, 'penanggulangan'])->name('penanggulangan');
+});

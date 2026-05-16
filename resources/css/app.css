@@ -20,6 +20,30 @@ a {
     color: inherit;
 }
 
+/* Tab button — state default */
+.tab-btn {
+    color: #64748b; /* slate-500 */
+}
+.tab-btn:hover {
+    color: #1e293b; /* slate-800 */
+}
+
+/* Tab button — state aktif */
+.tab-btn--active {
+    color: #f97316; /* orange-500 */
+    position: relative;
+}
+.tab-btn--active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background-color: #f97316;
+    border-radius: 9999px;
+}
+
 .warning-banner {
     min-height: 106px;
     background: linear-gradient(135deg, #fb923c 0%, #f97316 62%, #ff8a3d 100%);
