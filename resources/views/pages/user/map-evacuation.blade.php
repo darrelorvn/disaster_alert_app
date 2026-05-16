@@ -5,7 +5,7 @@
     
     <div class="flex-1 relative bg-[#F1F5F9]">
         
-        <div class="absolute top-8 left-8 right-8 z-20 flex flex-col gap-6 pointer-events-none">
+        <div class="absolute top-8 left-8 right-8 z-[500] flex flex-col gap-6 pointer-events-none">
             
             <div class="flex justify-between items-start w-full">
                 <div class="pointer-events-auto bg-white/95 backdrop-blur-md px-7 py-4 rounded-[24px] shadow-[0_12px_40px_rgba(0,0,0,0.04)] border border-white/50 flex flex-col gap-1 min-w-[240px]">
@@ -53,18 +53,16 @@
             </div>
         </div>
 
-        <div id="map" class="w-full h-full bg-[#E2E8F0] relative overflow-hidden">
-             <div class="absolute inset-0 flex items-center justify-center opacity-30">
-                <div class="w-96 h-96 bg-orange-100 rounded-full animate-ping opacity-10"></div>
-             </div>
-        </div>
+        {{-- Container Peta Leaflet --}}
+        <div id="map" class="w-full h-full bg-[#E2E8F0] relative z-0"></div>
 
-        <button class="absolute bottom-10 left-10 w-16 h-16 bg-[#FF7F3E] text-white rounded-full shadow-[0_20px_50px_rgba(255,127,62,0.35)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-20">
+        <button class="absolute bottom-10 left-10 w-16 h-16 bg-[#FF7F3E] text-white rounded-full shadow-[0_20px_50px_rgba(255,127,62,0.35)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-[500]">
             <i class="fas fa-paper-plane text-xl transform -rotate-45 -translate-y-0.5"></i>
         </button>
     </div>
 
-    <aside class="w-[450px] bg-white border-l border-slate-100 flex flex-col z-30 shadow-[-25px_0_60px_rgba(0,0,0,0.02)]">
+    {{-- Sidebar Kanan - Z-index ditingkatkan --}}
+    <aside class="w-[450px] bg-white border-l border-slate-100 flex flex-col z-[500] shadow-[-25px_0_60px_rgba(0,0,0,0.02)] relative">
         <div class="p-9 pb-6">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-[24px] font-black text-slate-800 tracking-tighter">Daftar Shelter</h2>
@@ -141,10 +139,42 @@
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #F1F5F9; border-radius: 20px; }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #E2E8F0; }
-    
-    @keyframes pulse-custom {
-        0%, 100% { opacity: 0.1; }
-        50% { opacity: 0.2; }
-    }
+    /* Animasi pulse telah dihapus karena sudah digantikan oleh peta asli */
 </style>
 @endsection
+
+@push('scripts')
+<script type="module">
+document.addEventListener('DOMContentLoaded', function () {
+    var mapCenter = [-6.2000, 106.8166];
+    var map = L.map('map', {
+        zoomControl: false
+    }).setView(mapCenter, 13);
+
+    L.control.zoom({
+        position: 'bottomright'
+    }).addTo(map);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    var geofenceRadius = L.circle(mapCenter, {
+        color: '#FF7F3E',        
+        fillColor: '#FF7F3E',    
+        fillOpacity: 0.1,        
+        radius: 5200            
+    }).addTo(map);
+
+    var markerMenteng = L.marker([-6.1944, 106.8330]).addTo(map)
+        .bindPopup('<b>SDN 01 Menteng</b><br>Status: Siaga<br>Terdaftar: 120 Orang');
+
+    var markerIstiqlal = L.marker([-6.1702, 106.8310]).addTo(map)
+        .bindPopup('<b>Masjid Istiqlal</b><br>Status: <span style="color:red;">Penuh</span><br>Kapasitas: 100%');
+
+    var group = new L.featureGroup([markerMenteng, markerIstiqlal, geofenceRadius]);
+    map.fitBounds(group.getBounds(), { padding: [50, 50] });
+});
+</script>
+@endpush

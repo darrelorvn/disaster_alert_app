@@ -98,16 +98,19 @@
             </button>
         </div>
         
-        <div class="relative h-96 w-full rounded-xl border border-slate-200 bg-slate-100 flex items-center justify-center overflow-hidden">
-            <p class="text-slate-400 font-medium">[ Peta Sebaran Bencana Leaflet/Mapbox ]</p>
+        {{-- Kontainer Peta --}}
+        <div class="relative h-96 w-full rounded-xl border border-slate-200 bg-slate-100 overflow-hidden">
             
-            <div class="absolute bottom-4 right-4 flex flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-                <button class="p-2 text-slate-600 hover:bg-slate-100 border-b border-slate-200">
+            <div id="distributionMap" class="absolute inset-0 z-0"></div>
+            
+            {{-- Custom Zoom Control diposisikan di atas Leaflet --}}
+            <div class="absolute bottom-4 right-4 flex flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm z-[500]">
+                <button id="zoomInBtn" class="p-2 text-slate-600 hover:bg-slate-100 border-b border-slate-200 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
                 </button>
-                <button class="p-2 text-slate-600 hover:bg-slate-100">
+                <button id="zoomOutBtn" class="p-2 text-slate-600 hover:bg-slate-100 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                     </svg>
@@ -225,3 +228,37 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script type="module">
+document.addEventListener('DOMContentLoaded', function () {
+    var map = L.map('distributionMap', {
+        zoomControl: false 
+    }).setView([-6.2250, 106.9004], 12);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    document.getElementById('zoomInBtn').addEventListener('click', function() {
+        map.zoomIn();
+    });
+    
+    document.getElementById('zoomOutBtn').addEventListener('click', function() {
+        map.zoomOut();
+    });
+
+    var incidentData = [
+        { lat: -6.2425, lng: 106.8642, title: 'Darurat: Tanggul Jebol', desc: 'Jatiwarna, Jakarta Timur', status: 'red' },
+        { lat: -6.3000, lng: 106.8800, title: 'Waspada: Pohon Tumbang', desc: 'Jl. Raya Bogor KM 22', status: 'orange' },
+        { lat: -6.3200, lng: 106.8700, title: 'Info: Distribusi Logistik', desc: 'GOR Ciracas', status: 'blue' }
+    ];
+
+    incidentData.forEach(function(incident) {
+        L.marker([incident.lat, incident.lng]).addTo(map)
+            .bindPopup('<strong style="color:' + incident.status + '">' + incident.title + '</strong><br>' + incident.desc);
+    });
+});
+</script>
+@endpush
