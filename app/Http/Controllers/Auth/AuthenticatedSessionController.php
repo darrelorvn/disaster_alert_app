@@ -23,10 +23,10 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         if ($request->user()->isOfficer()) {
-            return redirect()->intended(route('officer.home', absolute: false));
+            return redirect()->route('officer.home');
         }
-
-        return redirect()->intended(route('user.home', absolute: false));
+    
+        return redirect()->route('user.home');
     }
 
     public function destroy(Request $request): RedirectResponse
@@ -37,6 +37,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

@@ -62,6 +62,11 @@
                     <small class="block mt-[3px] text-[#aebbd0] text-[10px] font-bold">Ambulans, Damkar, Polisi</small>
                 </div>
             </a>
+
+            <a href="{{ route('user.tindakan-preventif.index') }}" class="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-orange-600 shadow-sm">
+                <i class="fa-solid fa-clipboard-list"></i>
+                Daftar Tindakan Preventif
+            </a>
         </aside>
     </section>
 

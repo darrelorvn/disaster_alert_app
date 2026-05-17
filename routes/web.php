@@ -5,44 +5,27 @@ use App\Http\Controllers\Web\OfficerPageController;
 use App\Http\Controllers\Web\UserPageController;
 use App\Http\Controllers\BmkgController;
 use App\Http\Controllers\Web\Officer\KelolaDataController;
+use App\Http\Controllers\User\TindakanPreventifController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Root Routes (Otomatis ke Login)
-|--------------------------------------------------------------------------
-*/
-
-// Ubah rute '/' agar langsung melempar pengguna ke halaman login
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// API BMKG Terbuka
 Route::get('/bmkg-terbaru', [BmkgController::class, 'latest'])->name('user.bmkg.terbaru');
 
-/*
-|--------------------------------------------------------------------------
-| Rute Masyarakat (User)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('user')->name('user.')->group(function () {
-    // Pindahkan rute beranda user ke sini (misal URL-nya jadi /user/home)
+Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     Route::get('/home', [UserPageController::class, 'home'])->name('home');
-    
     Route::get('/profil', [UserPageController::class, 'profile'])->name('profile');
     Route::get('/peta-evakuasi', [UserPageController::class, 'map'])->name('map');
     Route::get('/laporkan-bencana', [UserPageController::class, 'report'])->name('report');
     Route::get('/panduan-aman', [UserPageController::class, 'safety'])->name('safety');
+
+    Route::resource('tindakan-preventif', TindakanPreventifController::class)
+        ->parameters(['tindakan-preventif' => 'tindakanPreventif']);
 });
 
-
-/*
-|--------------------------------------------------------------------------
-| Rute Petugas (Officer)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('petugas')->name('officer.')->group(function () {
+Route::prefix('petugas')->name('officer.')->middleware('auth')->group(function () {
     Route::get('/home', [OfficerPageController::class, 'home'])->name('home');
     Route::get('/profil', [OfficerPageController::class, 'profile'])->name('profile');
     Route::get('/kelola-data', [OfficerPageController::class, 'manageData'])->name('manage-data');
@@ -56,12 +39,6 @@ Route::prefix('petugas')->name('officer.')->group(function () {
     });
 });
 
-
-/*
-|--------------------------------------------------------------------------
-| Rute Bawaan Laravel Breeze (Profile & Auth)
-|--------------------------------------------------------------------------
-*/
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

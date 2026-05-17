@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TindakanPreventif extends Model
 {
@@ -12,16 +11,19 @@ class TindakanPreventif extends Model
 
     protected $fillable = [
         'user_id',
-        'waktu_tindakan',
         'aktivitas',
-        'foto_bukti',
+        'deskripsi',
+        'waktu_tindakan',
+        'lokasi',
+        'foto',
     ];
 
     protected $casts = [
+        'user_id'        => 'integer',
         'waktu_tindakan' => 'datetime',
     ];
 
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }

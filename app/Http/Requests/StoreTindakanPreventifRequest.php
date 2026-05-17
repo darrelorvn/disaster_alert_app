@@ -12,7 +12,7 @@ class StoreTindakanPreventifRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,11 @@ class StoreTindakanPreventifRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-        ];
+            'aktivitas'       => ['required', 'string', 'max:255'],
+            'deskripsi'       => ['required', 'string'],
+            'waktu_tindakan'  => ['required', 'date', 'before_or_equal:now'],
+            'lokasi'          => ['nullable', 'string', 'max:255'],
+            'foto'            => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+    ];
     }
 }
