@@ -1,53 +1,58 @@
-<aside class="w-72 bg-[#1e2532] text-slate-400 flex flex-col h-full font-sans">
-    
-    <nav class="flex-1 mt-8">
+@php
+    $routeName = Route::currentRouteName();
+    $isOfficer = \Illuminate\Support\Str::startsWith((string) $routeName, 'officer.');
+
+    $userMenus = [
+        ['label' => 'Beranda', 'route' => 'user.home', 'match' => ['user.home', 'user.home.public'], 'icon' => 'fa-solid fa-bullseye'],
+        ['label' => 'Peta dan Evakuasi', 'route' => 'user.map', 'match' => ['user.map'], 'icon' => 'fa-regular fa-map'],
+        ['label' => 'Laporkan Bencana', 'route' => 'user.report', 'match' => ['user.report'], 'icon' => 'fa-solid fa-triangle-exclamation'],
+        ['label' => 'Panduan Aman', 'route' => 'user.safety', 'match' => ['user.safety'], 'icon' => 'fa-solid fa-shield-halved'],
+        ['label' => 'Profil', 'route' => 'user.profile', 'match' => ['user.profile'], 'icon' => 'fa-regular fa-user'],
+    ];
+
+    $officerMenus = [
+        ['label' => 'Dashboard Petugas', 'route' => 'officer.home', 'match' => ['officer.home'], 'icon' => 'fa-solid fa-bullseye'],
+        ['label' => 'Kelola Data', 'route' => 'officer.manage-data', 'match' => ['officer.manage-data', 'officer.kelola-data.*'], 'icon' => 'fa-solid fa-database'],
+        ['label' => 'Profil Petugas', 'route' => 'officer.profile', 'match' => ['officer.profile'], 'icon' => 'fa-regular fa-user'],
+    ];
+
+    $menus = $isOfficer ? $officerMenus : $userMenus;
+@endphp
+
+<aside class="flex flex-col w-64 h-full bg-slate-800 text-gray-400">
+    <nav class="flex-1 py-4" aria-label="Navigasi utama">
         <ul class="space-y-1">
-            <li>
-                <a href="#" class="flex items-center gap-5 px-8 py-5 transition hover:text-slate-200 group">
-                    <i class="fas fa-bullseye text-2xl opacity-80"></i>
-                    <span class="text-[15px] font-medium tracking-wide">Beranda</span>
-                </a>
-            </li>
+            @foreach ($menus as $menu)
+                @php
+                    $isActive = false;
+                    foreach ($menu['match'] as $pattern) {
+                        if (\Illuminate\Support\Str::is($pattern, $routeName)) {
+                            $isActive = true;
+                            break;
+                        }
+                    }
+                @endphp
 
-            <li>
-                <a href="#" class="flex items-center gap-5 px-8 py-5 transition hover:text-slate-200 group">
-                    <i class="fas fa-map text-2xl opacity-80"></i>
-                    <span class="text-[15px] font-medium tracking-wide">Peta dan Evakuasi</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#" class="flex items-center gap-5 px-8 py-5 transition hover:text-slate-200 group">
-                    <i class="fas fa-exclamation-triangle text-2xl opacity-80"></i>
-                    <span class="text-[15px] font-medium tracking-wide">Laporkan Bencana</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#" class="flex items-center gap-5 px-8 py-5 transition hover:text-slate-200 group">
-                    <i class="fas fa-shield-alt text-2xl opacity-80"></i>
-                    <span class="text-[15px] font-medium tracking-wide">Panduan Aman</span>
-                </a>
-            </li>
-
-            <li class="relative">
-                <a href="#" class="flex items-center gap-5 px-8 py-5 bg-[#2d2d3a] text-[#f97316] transition shadow-sm">
-                    <i class="fas fa-user-circle text-2xl"></i>
-                    <span class="text-[15px] font-bold tracking-wide">Profil</span>
-                    <div class="absolute right-0 top-0 h-full w-[4px] bg-[#f97316]"></div>
-                </a>
-            </li>
+                <li>
+                    <a href="{{ route($menu['route']) }}"
+                        class="flex items-center gap-4 px-6 py-3 text-sm transition-colors duration-200 
+                                {{ $isActive ? 'bg-slate-700 text-orange-500 border-r-2 border-orange-500' : 'hover:bg-slate-700 hover:text-gray-200' }}">
+                        <i class="{{ $menu['icon'] }} w-5 text-center {{ $isActive ? 'text-orange-500' : 'text-gray-400' }}"></i>
+                        <span>{{ $menu['label'] }}</span>
+                    </a>
+                </li>
+            @endforeach
         </ul>
     </nav>
 
-    <div class="p-8 space-y-6 border-t border-slate-800/60 mb-2">
-        <a href="#" class="flex items-center gap-4 text-sm text-slate-500 hover:text-slate-200 transition">
-            <i class="fas fa-cog text-lg"></i>
-            <span class="font-medium">Settings</span>
+    <div class="px-2 py-4 mt-auto mb-4 space-y-1">
+        <a href="#" class="flex items-center gap-4 px-4 py-2 text-sm transition-colors duration-200 rounded text-gray-400 hover:bg-slate-700 hover:text-gray-200">
+            <i class="fa-solid fa-gear w-5 text-center"></i>
+            <span>Settings</span>
         </a>
-        <a href="#" class="flex items-center gap-4 text-sm text-slate-500 hover:text-slate-200 transition">
-            <i class="fas fa-question-circle text-lg"></i>
-            <span class="font-medium">Support</span>
+        <a href="#" class="flex items-center gap-4 px-4 py-2 text-sm transition-colors duration-200 rounded text-gray-400 hover:bg-slate-700 hover:text-gray-200">
+            <i class="fa-regular fa-circle-question w-5 text-center"></i>
+            <span>Support</span>
         </a>
     </div>
 </aside>

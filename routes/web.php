@@ -5,6 +5,7 @@ use App\Http\Controllers\Web\UserPageController;
 use App\Http\Controllers\BmkgController;
 use App\Models\SafetyGuide; 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\Officer\KelolaDataController;
 
 Route::get('/login', function () {
     return redirect('/');
@@ -16,7 +17,7 @@ Route::get('/user/profil', [UserPageController::class, 'profile'])->name('user.p
 
 Route::get('/user/bmkg-terbaru', [BmkgController::class, 'getLatestEarthquake'])->name('user.bmkg.terbaru');
 
-Route::prefix('user')->name('user.')->middleware('auth')->group(function (): void {
+Route::prefix('user')->name('user.')->group(function (): void {
     Route::get('/home', [UserPageController::class, 'home'])->name('home');
     Route::get('/peta-evakuasi', [UserPageController::class, 'map'])->name('map');
     Route::get('/laporkan-bencana', [UserPageController::class, 'report'])->name('report');
@@ -29,7 +30,6 @@ Route::prefix('petugas')->name('officer.')->group(function (): void {
     Route::get('/profil', [OfficerPageController::class, 'profile'])->name('profile');
 });
 
-use App\Http\Controllers\Web\Officer\KelolaDataController;
 
 Route::prefix('petugas/kelola-data')->name('officer.kelola-data.')->group(function () {
     Route::get('/laporan', [KelolaDataController::class, 'laporan'])->name('laporan');
