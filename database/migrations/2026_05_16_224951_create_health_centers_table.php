@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('health_centers', function (Blueprint $table) {
             $table->id();
+            $table->string('nama_faskes');        
+            $table->string('jenis_bencana')->nullable(); 
+            $table->string('wilayah');           
+            $table->enum('status', ['AKTIF', 'SIAGA', 'KRITIS', 'NON-AKTIF'])->default('AKTIF'); 
+            $table->text('deskripsi_bencana')->nullable(); 
             $table->timestamps();
         });
     }

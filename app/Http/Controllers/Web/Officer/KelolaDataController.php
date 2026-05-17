@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web\Officer;
 
 use App\Http\Controllers\Controller;
+use App\Models\HealthCenter;
 use Illuminate\Http\Request;
 
 class KelolaDataController extends Controller
@@ -24,7 +25,9 @@ class KelolaDataController extends Controller
 
     public function faskes()
     {
-        return view('pages.officer.kelola-data.fasilitas-kesehatan');
+        $healthCenters = HealthCenter::all(); 
+
+        return view('pages.officer.kelola-data.fasilitas-kesehatan', compact('healthCenters'));
     }
 
     public function penanggulangan()

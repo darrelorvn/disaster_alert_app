@@ -6,10 +6,11 @@ use App\Http\Controllers\Web\UserPageController;
 use App\Http\Controllers\BmkgController;
 use App\Http\Controllers\Web\Officer\KelolaDataController;
 use App\Http\Controllers\User\TindakanPreventifController;
+use App\Http\Controllers\HealthCenterController; 
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return redirect('/login');
 });
 
 Route::get('/bmkg-terbaru', [BmkgController::class, 'latest'])->name('user.bmkg.terbaru');
@@ -25,17 +26,21 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
         ->parameters(['tindakan-preventif' => 'tindakanPreventif']);
 });
 
-Route::prefix('petugas')->name('officer.')->middleware('auth')->group(function () {
-    Route::get('/home', [OfficerPageController::class, 'home'])->name('home');
-    Route::get('/profil', [OfficerPageController::class, 'profile'])->name('profile');
-    Route::get('/kelola-data', [OfficerPageController::class, 'manageData'])->name('manage-data');
+Route::prefix('petugas')->middleware('auth')->group(function () {
+    
+    Route::get('/home', [OfficerPageController::class, 'home'])->name('officer.home');
+    Route::get('/profil', [OfficerPageController::class, 'profile'])->name('officer.profile');
+    Route::get('/kelola-data', [OfficerPageController::class, 'manageData'])->name('officer.manage-data');
 
-    Route::prefix('kelola-data')->name('kelola-data.')->group(function () {
-        Route::get('/laporan', [KelolaDataController::class, 'laporan'])->name('laporan');
-        Route::get('/evakuasi', [KelolaDataController::class, 'evakuasi'])->name('evakuasi');
-        Route::get('/shelter', [KelolaDataController::class, 'shelter'])->name('shelter');
-        Route::get('/faskes', [KelolaDataController::class, 'faskes'])->name('faskes');
-        Route::get('/penanggulangan', [KelolaDataController::class, 'penanggulangan'])->name('penanggulangan');
+    Route::prefix('kelola-data')->group(function () {
+        Route::get('/laporan', [KelolaDataController::class, 'laporan'])->name('officer.kelola-data.laporan');
+        Route::get('/evakuasi', [KelolaDataController::class, 'evakuasi'])->name('officer.kelola-data.evakuasi');
+        Route::get('/shelter', [KelolaDataController::class, 'shelter'])->name('officer.kelola-data.shelter');
+        
+        Route::get('/faskes', [KelolaDataController::class, 'faskes'])->name('officer.kelola-data.faskes');
+        Route::post('/health-centers/store', [HealthCenterController::class, 'store'])->name('officer.health-centers.store');
+        
+        Route::get('/penanggulangan', [KelolaDataController::class, 'penanggulangan'])->name('officer.kelola-data.penanggulangan');
     });
 });
 
