@@ -20,7 +20,7 @@ class StoreDisasterReportRequest extends FormRequest
             'type' => ['required', 'string', Rule::in(array_column(DisasterType::cases(), 'value'))],
             'location_name' => ['nullable', 'string', 'max:255'],
             'occurred_at' => ['required', 'date'],
-            'description' => ['required', 'string', 'min:10'],
+            'description' => ['required', 'string'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'reporter_name' => ['nullable', 'string', 'max:255'],

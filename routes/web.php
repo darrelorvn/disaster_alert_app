@@ -6,6 +6,7 @@ use App\Http\Controllers\Web\UserPageController;
 use App\Http\Controllers\BmkgController;
 use App\Http\Controllers\Web\Officer\KelolaDataController;
 use App\Http\Controllers\User\TindakanPreventifController;
+use App\Http\Controllers\User\DisasterReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -18,9 +19,14 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     Route::get('/home', [UserPageController::class, 'home'])->name('home');
     Route::get('/profil', [UserPageController::class, 'profile'])->name('profile');
     Route::get('/peta-evakuasi', [UserPageController::class, 'map'])->name('map');
-    Route::get('/laporkan-bencana', [UserPageController::class, 'report'])->name('report');
     Route::get('/panduan-aman', [UserPageController::class, 'safety'])->name('safety');
 
+    Route::get('/laporan-bencana', [DisasterReportController::class, 'index'])->name('laporan-bencana.index');
+    Route::get('/laporkan-bencana', [DisasterReportController::class, 'create'])->name('report');
+    Route::post('/laporkan-bencana', [DisasterReportController::class, 'store'])->name('laporan-bencana.store');
+    Route::get('/laporan-bencana/{report}', [DisasterReportController::class, 'show'])->name('laporan-bencana.show');
+
+    // Tindakan Preventif
     Route::resource('tindakan-preventif', TindakanPreventifController::class)
         ->parameters(['tindakan-preventif' => 'tindakanPreventif']);
 });

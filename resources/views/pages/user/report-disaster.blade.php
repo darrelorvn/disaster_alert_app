@@ -1,115 +1,330 @@
 @extends('layouts.app')
 
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+    #reportMap { height: 280px; width: 100%; border-radius: 12px; background: #f8fafc; }
+</style>
+@endpush
+
 @section('content')
-<div class="flex-1 bg-[#F8FAFC] overflow-y-auto font-sans antialiased">
-    
-    <div class="px-12 pt-10 pb-6">
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">Form Laporkan Bencana</p>
-        <h1 class="text-[32px] font-black text-slate-800 tracking-tighter">Laporkan Bencana</h1>
-        <p class="text-sm text-slate-500 mt-1 font-medium">Laporkan kejadian bencana di sekitar Anda secara akurat.</p>
+<div class="min-h-screen bg-slate-50 p-6 md:p-8 font-sans text-slate-800">
+
+    {{-- Header --}}
+    <div class="mb-6">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">
+            <a href="{{ route('user.home') }}" class="hover:text-orange-500 transition-colors">Beranda</a>
+            <span class="mx-1">/</span>
+            <span class="text-orange-500">Laporkan Bencana</span>
+        </p>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-800">Laporkan Bencana</h1>
+        <p class="text-sm text-slate-500 mt-1">Laporkan kejadian bencana di sekitar Anda secara akurat dan lengkap.</p>
     </div>
 
-    <div class="px-12 mb-12">
-        <div class="relative flex justify-between items-center max-w-4xl mx-auto">
-            <div class="absolute top-5 left-0 w-full h-[3px] bg-slate-200 -translate-y-1/2 z-0 rounded-full">
-                <div class="w-1/3 h-full bg-green-600 transition-all duration-700 shadow-[0_0_10px_rgba(22,163,74,0.3)]"></div>
-            </div>
-
-            <div class="relative z-10 flex flex-col items-center gap-3">
-                <div class="w-11 h-11 rounded-full bg-green-600 text-white flex items-center justify-center font-black shadow-xl shadow-green-200 ring-4 ring-white transition-all scale-110">1</div>
-                <span class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Informasi Dasar</span>
-            </div>
-
-            <div class="relative z-10 flex flex-col items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-white border-2 border-slate-200 text-slate-300 flex items-center justify-center font-bold">2</div>
-                <span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Lokasi Kejadian</span>
-            </div>
-
-            <div class="relative z-10 flex flex-col items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-white border-2 border-slate-200 text-slate-300 flex items-center justify-center font-bold">3</div>
-                <span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Bukti Visual</span>
-            </div>
-
-            <div class="relative z-10 flex flex-col items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-white border-2 border-slate-200 text-slate-300 flex items-center justify-center font-bold">4</div>
-                <span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Selesai</span>
+    {{-- Pesan Notifikasi Sukses --}}
+    @if(session('success'))
+        <div class="mb-6 rounded-xl border border-green-200 bg-green-50 p-4 flex items-start gap-3">
+            <i class="fa-solid fa-circle-check text-green-600 mt-0.5"></i>
+            <div>
+                <h3 class="text-sm font-bold text-green-800">Berhasil!</h3>
+                <p class="text-xs font-semibold text-green-700 mt-1">{{ session('success') }}</p>
             </div>
         </div>
-    </div>
+    @endif
 
-    <div class="px-12 grid grid-cols-12 gap-10 max-w-7xl mx-auto pb-20">
-        
-        <div class="col-span-12 lg:col-span-8">
-            <div class="bg-white rounded-[40px] shadow-[0_30px_80px_rgba(0,0,0,0.03)] border border-slate-50 overflow-hidden">
-                
-                <div class="p-6 bg-[#FFF8F5] border border-orange-100 flex items-start gap-5 mx-8 mt-8 rounded-[28px]">
-                    <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-500 shadow-sm">
-                        <i class="fas fa-bullhorn text-lg"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-[15px] font-black text-slate-800 tracking-tight">Informasi Laporan</h3>
-                        <p class="text-[12px] text-slate-500 leading-relaxed mt-1 font-medium italic">Sertakan informasi bencana yang Anda temui secara detail agar mempercepat penanganan.</p>
-                    </div>
-                </div>
+    {{-- Pesan Error Validasi Laravel --}}
+    @if($errors->any())
+        <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 flex items-start gap-3">
+            <i class="fa-solid fa-triangle-exclamation text-red-600 mt-0.5"></i>
+            <div>
+                <h3 class="text-sm font-bold text-red-800">Gagal Mengirim Laporan</h3>
+                <ul class="text-xs font-semibold text-red-700 mt-1 list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
 
-                <form action="#" class="p-10 space-y-10">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-300 uppercase tracking-[0.25em] mb-4">Jenis Bencana</label>
-                        <div class="relative group">
-                            <select class="w-full bg-slate-50 border-none rounded-[22px] px-8 py-5 text-[13px] font-black text-slate-700 appearance-none focus:ring-4 focus:ring-orange-500/10 transition-all cursor-pointer">
-                                <option value="" disabled selected>Pilih jenis bencana</option>
-                                <option value="banjir">Banjir & Arus Tinggi</option>
-                                <option value="kebakaran">Zona Kebakaran</option>
-                                <option value="gempa">Gempa Bumi</option>
-                            </select>
-                            <i class="fas fa-chevron-down absolute right-8 top-1/2 -translate-y-1/2 text-slate-300 text-xs pointer-events-none group-hover:text-orange-500 transition-colors"></i>
-                        </div>
-                    </div>
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_300px]">
 
-                    <div class="grid grid-cols-2 gap-8">
+        {{-- Kolom Kiri: Form --}}
+        <div class="flex flex-col gap-6">
+
+            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                {{-- FORM STANDARD PHP --}}
+                <form id="reportForm" action="{{ route('user.laporan-bencana.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    
+                    {{-- Input Hidden untuk menyatukan tanggal dan waktu sebelum submit --}}
+                    <input type="hidden" name="occurred_at" id="occurred_at_hidden">
+
+                    <div class="flex flex-col gap-8">
+                        {{-- ===== SEKSI 1: INFORMASI DASAR ===== --}}
                         <div>
-                            <label class="block text-[10px] font-black text-slate-300 uppercase tracking-[0.25em] mb-4">Tanggal Kejadian</label>
-                            <input type="date" class="w-full bg-slate-50 border-none rounded-[22px] px-8 py-5 text-[13px] font-black text-slate-700 focus:ring-4 focus:ring-orange-500/10 transition-all">
+                            <div class="flex items-center gap-3 mb-5">
+                                <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-orange-500 text-white text-xs font-black">1</div>
+                                <h2 class="text-sm font-bold text-slate-700">Informasi Dasar</h2>
+                            </div>
+
+                            <div class="flex flex-col gap-5">
+                                <div>
+                                    <label for="type" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
+                                        Jenis Bencana <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <select id="type" name="type" required class="w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/10">
+                                            <option value="" disabled selected>Pilih jenis bencana</option>
+                                            <option value="flood">Banjir & Arus Tinggi</option>
+                                            <option value="landslide">Tanah Longsor</option>
+                                            <option value="fire">Kebakaran</option>
+                                            <option value="earthquake">Gempa Bumi</option>
+                                        </select>
+                                        <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400"></i>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                                    <div>
+                                        <label for="date" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
+                                            Tanggal Kejadian <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="date" id="date" required max="{{ now()->format('Y-m-d') }}" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/10">
+                                    </div>
+                                    <div>
+                                        <label for="time" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
+                                            Waktu Kejadian <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="time" id="time" required class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/10">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="mb-1.5 flex items-center justify-between">
+                                        <label for="description" class="text-xs font-bold uppercase tracking-wider text-slate-500">
+                                            Deskripsi Kejadian <span class="text-red-500">*</span>
+                                        </label>
+                                        <span id="charCount" class="text-[10px] font-bold text-slate-400">0/500</span>
+                                    </div>
+                                    <textarea id="description" name="description" required rows="5" maxlength="500" placeholder="Ceritakan detail kejadian secara singkat..." class="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 placeholder:text-slate-400 placeholder:font-normal outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/10">{{ old('description') }}</textarea>
+                                </div>
+                            </div>
                         </div>
+
+                        <div class="border-t border-slate-100"></div>
+
+                        {{-- ===== SEKSI 2: LOKASI KEJADIAN ===== --}}
                         <div>
-                            <label class="block text-[10px] font-black text-slate-300 uppercase tracking-[0.25em] mb-4">Waktu (WIB)</label>
-                            <input type="time" class="w-full bg-slate-50 border-none rounded-[22px] px-8 py-5 text-[13px] font-black text-slate-700 focus:ring-4 focus:ring-orange-500/10 transition-all">
-                        </div>
-                    </div>
+                            <div class="flex items-center gap-3 mb-5">
+                                <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-orange-500 text-white text-xs font-black">2</div>
+                                <h2 class="text-sm font-bold text-slate-700">Lokasi Kejadian</h2>
+                            </div>
 
-                    <div>
-                        <div class="flex justify-between items-center mb-4">
-                            <label class="text-[10px] font-black text-slate-300 uppercase tracking-[0.25em]">Deskripsi Kejadian</label>
-                            <span class="text-[10px] font-black text-slate-200">0/500</span>
-                        </div>
-                        <textarea rows="7" placeholder="Ceritakan detail kejadian secara singkat dan jelas..." 
-                            class="w-full bg-slate-50 border-none rounded-[32px] px-8 py-6 text-[13px] font-bold text-slate-700 placeholder:text-slate-300 focus:ring-4 focus:ring-orange-500/10 transition-all resize-none"></textarea>
-                    </div>
+                            <div class="flex flex-col gap-4">
+                                <button type="button" id="btn-deteksi-lokasi" class="inline-flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-orange-200 bg-orange-50 px-4 py-3 text-sm font-bold text-orange-600 transition hover:border-orange-400 hover:bg-orange-100">
+                                    <i class="fa-solid fa-location-crosshairs"></i> Gunakan Lokasi Saya Sekarang
+                                </button>
 
-                    <div class="pt-6 flex justify-end">
-                        <button type="submit" class="bg-[#FF7F3E] text-white px-12 py-5 rounded-[22px] font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-orange-200 hover:bg-[#e66a2e] hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-4">
-                            Lanjut Ke Lokasi <i class="fas fa-arrow-right text-[9px]"></i>
-                        </button>
+                                <div id="lokasi-status" class="hidden items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5">
+                                    <i class="fa-solid fa-circle-check text-emerald-500 text-sm shrink-0"></i>
+                                    <p id="lokasi-status-text" class="text-xs font-bold text-emerald-700"></p>
+                                </div>
+
+                                <div id="reportMap" class="z-0"></div>
+                                <p class="text-[11px] font-semibold text-slate-400 text-center -mt-1">
+                                    <i class="fa-solid fa-hand-pointer mr-1"></i> Klik di peta untuk menyesuaikan titik lokasi manual
+                                </p>
+
+                                <div>
+                                    <label for="location_name" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
+                                        Alamat / Keterangan Lokasi <span class="text-slate-400 text-[10px] normal-case font-semibold">(terisi otomatis)</span>
+                                    </label>
+                                    <div class="relative">
+                                        <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                            <i class="fa-solid fa-location-dot text-xs"></i>
+                                        </span>
+                                        <input type="text" id="alamat" name="location_name" readonly placeholder="Alamat akan terisi otomatis setelah titik dipilih..." class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-4 text-sm font-semibold text-slate-700 placeholder:text-slate-400 outline-none">
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="latitude" name="latitude">
+                                <input type="hidden" id="longitude" name="longitude">
+                            </div>
+                        </div>
+
+                        <div class="border-t border-slate-100"></div>
+
+                        {{-- ===== SEKSI 3: BUKTI VISUAL ===== --}}
+                        <div>
+                            <div class="flex items-center gap-3 mb-5">
+                                <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-orange-500 text-white text-xs font-black">3</div>
+                                <h2 class="text-sm font-bold text-slate-700">Bukti Visual</h2>
+                            </div>
+
+                            <div class="flex flex-col gap-4">
+                                <label for="foto" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center transition hover:border-orange-400 hover:bg-orange-50/40" id="foto-dropzone">
+                                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition group-hover:bg-orange-100 group-hover:text-orange-500">
+                                        <i class="fa-solid fa-camera text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-600 group-hover:text-orange-600 transition">Unggah foto bukti kejadian</p>
+                                        <p class="mt-0.5 text-xs text-slate-400">PNG, JPG, atau JPEG — Maks. 5 MB</p>
+                                    </div>
+                                    {{-- Mengubah nama field agar mendukung request array --}}
+                                    <input type="file" id="foto" name="photos[]" accept="image/png,image/jpg,image/jpeg" class="sr-only" onchange="previewFoto(this)">
+                                </label>
+
+                                <div id="foto-preview-wrapper" class="hidden">
+                                    <div class="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3">
+                                        <img id="foto-preview-img" src="" alt="Preview foto" class="h-16 w-16 rounded-lg object-cover border border-slate-100 shrink-0">
+                                        <div class="min-w-0 flex-1">
+                                            <p id="foto-preview-name" class="truncate text-xs font-bold text-slate-700"></p>
+                                            <p id="foto-preview-size" class="text-[10px] text-slate-400 font-semibold mt-0.5"></p>
+                                        </div>
+                                        <button type="button" onclick="hapusFoto()" class="shrink-0 flex h-7 w-7 items-center justify-center rounded-full bg-red-50 text-red-500 transition hover:bg-red-100">
+                                            <i class="fa-solid fa-xmark text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-slate-100"></div>
+
+                        {{-- Tombol Submit --}}
+                        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                            <a href="{{ route('user.home') }}" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-6 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50">
+                                Batal
+                            </a>
+                            <button type="submit" id="submitBtn" class="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm shadow-orange-500/20 transition hover:bg-orange-600">
+                                <i class="fa-solid fa-paper-plane"></i> Kirim Laporan
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div class="col-span-12 lg:col-span-4">
-            <div class="bg-[#FF7F3E] rounded-[40px] p-10 text-white shadow-[0_25px_60px_rgba(255,127,62,0.25)] relative overflow-hidden group">
-                <div class="absolute -right-16 -top-16 w-56 h-56 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-700"></div>
-                
-                <h2 class="text-2xl font-black tracking-tight mb-5 relative z-10">Penting!</h2>
-                <p class="text-[13px] font-bold leading-relaxed text-orange-50/80 relative z-10 mb-10">
-                    Pastikan informasi yang Anda berikan benar dan akurat untuk mempermudah proses evakuasi dan penanganan oleh tim Sentinel.
-                </p>
-
-                <div class="absolute bottom-[-20px] right-[-10px] opacity-10 text-[140px] transform -rotate-12 transition-transform group-hover:rotate-0 duration-700">
-                    <i class="fas fa-shield-alt text-white"></i>
+        {{-- Kolom Kanan: Panduan --}}
+        <div class="flex flex-col gap-4">
+            <div class="rounded-xl bg-orange-500 p-6 text-white shadow-sm shadow-orange-500/20">
+                <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-white/20">
+                    <i class="fa-solid fa-triangle-exclamation text-white"></i>
                 </div>
+                <h3 class="mb-2 text-sm font-bold">Penting!</h3>
+                <p class="text-xs font-semibold leading-relaxed text-orange-100">
+                    Pastikan informasi yang Anda berikan benar dan akurat untuk mempercepat penanganan oleh tim Sentinel.
+                </p>
+            </div>
+            
+            <div class="rounded-xl border border-red-100 bg-red-50/50 p-6 shadow-sm">
+                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-red-400">Darurat Medis?</h3>
+                <a href="tel:119" class="flex items-center justify-between rounded-lg bg-white border border-red-100 px-4 py-2.5 transition hover:border-red-300">
+                    <span class="text-xs font-bold text-slate-700">Ambulans / BPBD</span>
+                    <span class="text-sm font-black text-red-500">119</span>
+                </a>
             </div>
         </div>
-        
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    // ===== PETA & DETEKSI LOKASI =====
+    const defaultLat = -6.2088;
+    const defaultLng = 106.8456;
+    const map = L.map('reportMap').setView([defaultLat, defaultLng], 12);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
+    const marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+
+    marker.on('dragend', function () {
+        const pos = marker.getLatLng();
+        updateKoordinat(pos.lat, pos.lng);
+        reverseGeocode(pos.lat, pos.lng);
+    });
+
+    map.on('click', function (e) {
+        marker.setLatLng(e.latlng);
+        updateKoordinat(e.latlng.lat, e.latlng.lng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+
+    function updateKoordinat(lat, lng) {
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+    }
+
+    function reverseGeocode(lat, lng) {
+        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+            .then(res => res.json())
+            .then(data => { if (data && data.display_name) document.getElementById('alamat').value = data.display_name; })
+            .catch(() => {});
+    }
+
+    document.getElementById('btn-deteksi-lokasi').addEventListener('click', function () {
+        const btn = this;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mendeteksi lokasi...';
+        btn.disabled = true;
+
+        navigator.geolocation.getCurrentPosition(
+            function (position) {
+                const lat = position.coords.latitude, lng = position.coords.longitude;
+                map.setView([lat, lng], 16);
+                marker.setLatLng([lat, lng]);
+                updateKoordinat(lat, lng);
+                reverseGeocode(lat, lng);
+
+                btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Lokasi Terdeteksi';
+                btn.classList.replace('text-orange-600', 'text-emerald-600');
+            },
+            function () {
+                alert('Gagal mendeteksi lokasi. Pastikan izin lokasi aktif.');
+                btn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> Gunakan Lokasi Saya';
+                btn.disabled = false;
+            },
+            { enableHighAccuracy: true }
+        );
+    });
+
+    // ===== CHAR COUNT =====
+    const textarea = document.getElementById('description');
+    const charCount = document.getElementById('charCount');
+    textarea.addEventListener('input', function () { charCount.textContent = `${this.value.length}/500`; });
+
+    // ===== PREVIEW FOTO =====
+    function previewFoto(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = e => { document.getElementById('foto-preview-img').src = e.target.result; };
+        reader.readAsDataURL(file);
+
+        document.getElementById('foto-preview-name').textContent = file.name;
+        document.getElementById('foto-preview-size').textContent = (file.size / 1024).toFixed(1) + ' KB';
+        document.getElementById('foto-preview-wrapper').classList.remove('hidden');
+        document.getElementById('foto-dropzone').classList.add('hidden');
+    }
+
+    function hapusFoto() {
+        document.getElementById('foto').value = '';
+        document.getElementById('foto-preview-wrapper').classList.add('hidden');
+        document.getElementById('foto-dropzone').classList.remove('hidden');
+    }
+
+    // ===== NATIVE FORM SUBMIT INTERCEPT =====
+    const form = document.getElementById('reportForm');
+    form.addEventListener('submit', function (e) {
+        // Gabungkan tanggal dan waktu ke dalam hidden input 'occurred_at' sebelum form terkirim
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('time').value;
+        document.getElementById('occurred_at_hidden').value = `${date} ${time}:00`;
+    });
+
+    setTimeout(() => map.invalidateSize(), 300);
+</script>
+@endpush
