@@ -26,7 +26,6 @@ class UserPageController extends Controller
 
    public function map(Request $request) 
     {
-<<<<<<< Updated upstream
         // Mengambil data laporan bencana aktif untuk ditampilkan di Peta
         $mapData = DisasterReport::whereNotNull('latitude')
             ->whereNotNull('longitude')
@@ -53,7 +52,6 @@ class UserPageController extends Controller
 
         // Mengirim variabel $mapData ke tampilan blade
         return view('pages.user.map-evacuation', compact('mapData'));
-=======
         // input radius, default 5.2 KM
         $radius = $request->get('radius', 5.2); 
 
@@ -73,7 +71,6 @@ class UserPageController extends Controller
             'shelters'      => $shelters,
             'currentRadius' => $radius
         ]);
->>>>>>> Stashed changes
     }
 
     public function report()
