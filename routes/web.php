@@ -6,7 +6,7 @@ use App\Http\Controllers\Web\UserPageController;
 use App\Http\Controllers\BmkgController;
 use App\Http\Controllers\Web\Officer\KelolaDataController;
 use App\Http\Controllers\User\TindakanPreventifController;
-use App\Http\Controllers\HealthCenterController; 
+use App\Http\Controllers\Web\Officer\HealthCenterController; 
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,7 +27,6 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
 });
 
 Route::prefix('petugas')->middleware('auth')->group(function () {
-    
     Route::get('/home', [OfficerPageController::class, 'home'])->name('officer.home');
     Route::get('/profil', [OfficerPageController::class, 'profile'])->name('officer.profile');
     Route::get('/kelola-data', [OfficerPageController::class, 'manageData'])->name('officer.manage-data');

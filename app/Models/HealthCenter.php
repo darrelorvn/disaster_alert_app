@@ -2,13 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class HealthCenter extends Model
 {
     use HasFactory;
 
-    
-    protected $guarded = ['id'];
+    protected $table = 'health_centers';
+
+    protected $fillable = [
+        'nama_faskes',
+        'jenis_bencana',
+        'wilayah',
+        'status',
+        'deskripsi_bencana'
+    ];
 }
