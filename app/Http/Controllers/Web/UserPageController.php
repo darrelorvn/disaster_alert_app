@@ -7,17 +7,26 @@ use App\Models\SafetyGuide;
 use App\Models\DisasterReport;
 use App\Enums\ReportStatus;
 use App\Http\Resources\SafetyGuideResource;
+use App\Services\EmergencyPlaceService;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+
 
 class UserPageController extends Controller
 {
+    protected $placeService;
+    public function __construct(EmergencyPlaceService $placeService)
+    {
+        $this->placeService = $placeService;
+    }
     public function home()
     {
         return view('pages.user.home');
     }
 
-    public function map()
+   public function map(Request $request) 
     {
+<<<<<<< Updated upstream
         // Mengambil data laporan bencana aktif untuk ditampilkan di Peta
         $mapData = DisasterReport::whereNotNull('latitude')
             ->whereNotNull('longitude')
@@ -44,6 +53,27 @@ class UserPageController extends Controller
 
         // Mengirim variabel $mapData ke tampilan blade
         return view('pages.user.map-evacuation', compact('mapData'));
+=======
+        // input radius, default 5.2 KM
+        $radius = $request->get('radius', 5.2); 
+
+        //  filter untuk dikirim ke GeofenceService 
+        $filters = [
+            'status'    => 'active',
+            'radius_km' => $radius,
+            'latitude'  => $request->get('latitude', -6.2000), 
+            'longitude' => $request->get('longitude', 106.8166),
+        ];
+        
+        // Memanggil data shelter terdekat melalui service layer 
+        $shelters = $this->placeService->mapData($filters);
+
+        // Lempar data ke file blade peta kamu
+        return view('pages.user.map-evacuation', [
+            'shelters'      => $shelters,
+            'currentRadius' => $radius
+        ]);
+>>>>>>> Stashed changes
     }
 
     public function report()
