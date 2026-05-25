@@ -86,7 +86,7 @@
                     Shelter & Posko
                 </a>
                 
-                <a href="{{ route('officer.kelola-data.faskes') }}" 
+                <a href="{{ route('officer.kelola-data.faskes.index') }}" 
                    class="relative min-h-[62px] flex items-center px-7 text-[13px] font-bold whitespace-nowrap transition-colors {{ $currentTab === 'faskes' ? $activeClass : $inactiveClass }}">
                     Fasilitas Kesehatan
                 </a>

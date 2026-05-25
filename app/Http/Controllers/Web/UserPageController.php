@@ -8,17 +8,12 @@ use App\Models\DisasterReport;
 use App\Models\EmergencyPlace;
 use App\Enums\ReportStatus;
 use App\Http\Resources\SafetyGuideResource;
-use App\Services\EmergencyPlaceService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class UserPageController extends Controller
 {
-    protected $placeService;
-    public function __construct(EmergencyPlaceService $placeService)
-    {
-        $this->placeService = $placeService;
-    }
+    
     public function home()
     {
         $emergencyPlaces = EmergencyPlace::whereNotNull('latitude')

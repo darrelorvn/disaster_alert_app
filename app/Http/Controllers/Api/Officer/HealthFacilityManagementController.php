@@ -2,65 +2,84 @@
 
 namespace App\Http\Controllers\Api\Officer;
 
-use App\Http\Controllers\Concerns\RespondsWithApi;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Officer\StoreHealthFacilityRequest;
-use App\Http\Resources\EmergencyPlaceResource;
 use App\Models\EmergencyPlace;
-use App\Services\EmergencyPlaceService;
-use Illuminate\Http\JsonResponse;
+use App\Enums\EmergencyPlaceType;
+use App\Http\Requests\Officer\StoreEmergencyPlaceRequest;
 use Illuminate\Http\Request;
 
 class HealthFacilityManagementController extends Controller
 {
-    use RespondsWithApi;
-
-    public function __construct(private readonly EmergencyPlaceService $places)
+    public function index(Request $request)
     {
+        $query = EmergencyPlace::query()
+            ->whereIn('type', [
+                EmergencyPlaceType::HealthFacility->value ?? 'health_facility',
+                EmergencyPlaceType::HealthPost->value ?? 'health_post'
+            ]);
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $places = $query->latest()->paginate(10)->withQueryString();
+
+        $types = [
+            EmergencyPlaceType::HealthFacility ?? 'health_facility',
+            EmergencyPlaceType::HealthPost ?? 'health_post'
+        ];
+
+        return view('pages.officer.kelola-data.fasilitas-kesehatan', compact('places', 'types'));
     }
 
-    public function index(Request $request): JsonResponse
+    public function create()
     {
-        return $this->paginated(
-            $this->places->paginate(array_merge($request->query(), ['type' => 'health_facility'])),
-            EmergencyPlaceResource::class,
-            'Daftar fasilitas kesehatan berhasil diambil.'
-        );
+        $types = [
+            EmergencyPlaceType::HealthFacility ?? 'health_facility',
+            EmergencyPlaceType::HealthPost ?? 'health_post'
+        ];
+        
+        return view('pages.officer.kelola-data.create.fasilitas-kesehatan', compact('types'));
     }
 
-    public function store(StoreHealthFacilityRequest $request): JsonResponse
+    public function store(StoreEmergencyPlaceRequest $request)
     {
-        $payload = array_merge($request->validated(), ['type' => 'health_facility']);
+        EmergencyPlace::create($request->validated());
 
-        return $this->success(
-            new EmergencyPlaceResource($this->places->create($payload)),
-            'Fasilitas kesehatan berhasil dibuat.',
-            201
-        );
+        return redirect()
+            ->route('officer.kelola-data.faskes.index')
+            ->with('success', 'Data fasilitas kesehatan berhasil ditambahkan.');
     }
 
-    public function show(EmergencyPlace $facility): JsonResponse
+    public function edit(EmergencyPlace $facility)
     {
-        return $this->success(
-            new EmergencyPlaceResource($this->places->find($facility->id)),
-            'Detail fasilitas kesehatan berhasil diambil.'
-        );
+        $types = [
+            EmergencyPlaceType::HealthFacility ?? 'health_facility',
+            EmergencyPlaceType::HealthPost ?? 'health_post'
+        ];
+
+        return view('pages.officer.kelola-data.update.fasilitas-kesehatan', compact('facility', 'types'));
     }
 
-    public function update(StoreHealthFacilityRequest $request, EmergencyPlace $facility): JsonResponse
+    public function update(StoreEmergencyPlaceRequest $request, EmergencyPlace $facility)
     {
-        $payload = array_merge($request->validated(), ['type' => 'health_facility']);
+        $facility->update($request->validated());
 
-        return $this->success(
-            new EmergencyPlaceResource($this->places->update($facility->id, $payload)),
-            'Fasilitas kesehatan berhasil diperbarui.'
-        );
+        return redirect()
+            ->route('officer.kelola-data.faskes.index')
+            ->with('success', 'Data fasilitas kesehatan berhasil diperbarui.');
     }
 
-    public function destroy(EmergencyPlace $facility): JsonResponse
+    public function destroy(EmergencyPlace $facility)
     {
-        $this->places->delete($facility->id);
+        $facility->delete();
 
-        return $this->success(null, 'Fasilitas kesehatan berhasil dihapus.');
+        return redirect()
+            ->route('officer.kelola-data.faskes.index')
+            ->with('success', 'Data fasilitas kesehatan berhasil dihapus.');
     }
 }
