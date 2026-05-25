@@ -22,7 +22,10 @@ Route::get('/bmkg-terbaru', [BmkgController::class, 'latest'])->name('user.bmkg.
 Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     Route::get('/home', [UserPageController::class, 'home'])->name('home');
     Route::get('/profil', [UserPageController::class, 'profile'])->name('profile');
-    Route::get('/peta-evakuasi', [UserPageController::class, 'map'])->name('map');
+    Route::get('/peta-evakuasi', function() { return redirect()->route('user.map.laporan'); })->name('map');
+    Route::get('/peta-evakuasi/laporan', [UserPageController::class, 'mapLaporan'])->name('map.laporan');
+    Route::get('/peta-evakuasi/shelter-posko', [UserPageController::class, 'mapShelter'])->name('map.shelter');
+    Route::get('/peta-evakuasi/fasilitas-kesehatan', [UserPageController::class, 'mapFaskes'])->name('map.faskes');
     Route::get('/panduan-aman', [UserPageController::class, 'safety'])->name('safety');
 
     // Modul Laporan Bencana (Manual CRUD Routes)
