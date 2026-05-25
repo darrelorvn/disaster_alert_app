@@ -2,61 +2,108 @@
 
 namespace App\Http\Controllers\Api\Officer;
 
-use App\Http\Controllers\Concerns\RespondsWithApi;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Officer\StoreEmergencyPlaceRequest;
-use App\Http\Resources\EmergencyPlaceResource;
 use App\Models\EmergencyPlace;
-use App\Services\EmergencyPlaceService;
-use Illuminate\Http\JsonResponse;
+use App\Enums\EmergencyPlaceType;
+use App\Http\Requests\Officer\StoreEmergencyPlaceRequest;
 use Illuminate\Http\Request;
 
 class EmergencyPlaceManagementController extends Controller
 {
-    use RespondsWithApi;
-
-    public function __construct(private readonly EmergencyPlaceService $places)
+    /**
+     * Menampilkan daftar Shelter & Posko (Read - Index)
+     */
+    public function index(Request $request)
     {
+        // Hanya ambil tipe Shelter dan Posko Darurat
+        $query = EmergencyPlace::query()
+            ->whereIn('type', [
+                EmergencyPlaceType::Shelter->value,
+                EmergencyPlaceType::EmergencyPost->value
+            ]);
+
+        // Filter berdasarkan Input Type (jika ada)
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Filter berdasarkan Status (jika ada)
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $places = $query->latest()->paginate(10)->withQueryString();
+
+        // Kirim opsi tipe spesifik ke View untuk Dropdown Filter
+        $types = [
+            EmergencyPlaceType::Shelter,
+            EmergencyPlaceType::EmergencyPost
+        ];
+
+        // Memanggil View 'shelter-posko' yang berada di dalam folder officer/kelola-data
+        return view('pages.officer.kelola-data.shelter-posko', compact('places', 'types'));
     }
 
-    public function index(Request $request): JsonResponse
+    /**
+     * Menampilkan form tambah data (Create)
+     */
+    public function create()
     {
-        return $this->paginated(
-            $this->places->paginate($request->query()),
-            EmergencyPlaceResource::class,
-            'Daftar shelter dan posko berhasil diambil.'
-        );
+        // Dropdown form hanya menampilkan tipe Shelter dan Posko
+        $types = [
+            EmergencyPlaceType::Shelter,
+            EmergencyPlaceType::EmergencyPost
+        ];
+        
+        return view('pages.officer.kelola-data.create.shelter-posko', compact('types'));
     }
 
-    public function store(StoreEmergencyPlaceRequest $request): JsonResponse
+    /**
+     * Menyimpan data baru (Store)
+     */
+    public function store(StoreEmergencyPlaceRequest $request)
     {
-        return $this->success(
-            new EmergencyPlaceResource($this->places->create($request->validated())),
-            'Shelter atau posko berhasil dibuat.',
-            201
-        );
+        EmergencyPlace::create($request->validated());
+
+        return redirect()
+            ->route('officer.kelola-data.shelter.index')
+            ->with('success', 'Data Shelter/Posko berhasil ditambahkan.');
     }
 
-    public function show(EmergencyPlace $place): JsonResponse
+    /**
+     * Menampilkan form edit data (Edit)
+     */
+    public function edit(EmergencyPlace $place)
     {
-        return $this->success(
-            new EmergencyPlaceResource($this->places->find($place->id)),
-            'Detail shelter atau posko berhasil diambil.'
-        );
+        $types = [
+            EmergencyPlaceType::Shelter,
+            EmergencyPlaceType::EmergencyPost
+        ];
+
+        return view('pages.officer.kelola-data.update.shelter-posko', compact('place', 'types'));
     }
 
-    public function update(StoreEmergencyPlaceRequest $request, EmergencyPlace $place): JsonResponse
+    /**
+     * Memperbarui data (Update)
+     */
+    public function update(StoreEmergencyPlaceRequest $request, EmergencyPlace $place)
     {
-        return $this->success(
-            new EmergencyPlaceResource($this->places->update($place->id, $request->validated())),
-            'Shelter atau posko berhasil diperbarui.'
-        );
+        $place->update($request->validated());
+
+        return redirect()
+            ->route('officer.kelola-data.shelter.index')
+            ->with('success', 'Data Shelter/Posko berhasil diperbarui.');
     }
 
-    public function destroy(EmergencyPlace $place): JsonResponse
+    /**
+     * Menghapus data (Destroy)
+     */
+    public function destroy(EmergencyPlace $place)
     {
-        $this->places->delete($place->id);
+        $place->delete();
 
-        return $this->success(null, 'Shelter atau posko berhasil dihapus.');
+        return redirect()
+            ->route('officer.kelola-data.shelter.index')
+            ->with('success', 'Data Shelter/Posko berhasil dihapus.');
     }
 }

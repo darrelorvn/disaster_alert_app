@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\EmergencyPlaceType; // <-- PASTIKAN IMPORT INI ADA
 
 class EmergencyPlace extends Model
 {
@@ -20,6 +21,7 @@ class EmergencyPlace extends Model
     ];
 
     protected $casts = [
+        'type' => EmergencyPlaceType::class, // <-- TAMBAHKAN BARIS INI
         'metadata' => 'array',
         'latitude' => 'float',
         'longitude' => 'float',

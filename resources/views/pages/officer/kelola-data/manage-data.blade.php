@@ -17,9 +17,6 @@
                     Overview of active disasters and critical infrastructure deployment.
                 </p>
             </div>
-            <button class="border-0 rounded-[10px] bg-orange-500 text-white py-3.5 px-5 shadow-[0_14px_26px_rgba(249,115,22,0.25)] text-xs font-black tracking-[0.03em] uppercase cursor-pointer hover:bg-orange-600 transition-colors flex items-center gap-2 w-fit" type="button">
-                <i class="fa-solid fa-circle-plus"></i> Tambah Data
-            </button>
         </div>
 
         {{-- ===== STATS CARDS ===== --}}
@@ -82,12 +79,15 @@
                    class="relative min-h-[62px] flex items-center px-7 text-[13px] font-bold whitespace-nowrap transition-colors {{ $currentTab === 'evakuasi' ? $activeClass : $inactiveClass }}">
                     Jalur Evakuasi
                 </a>
-                <a href="{{ route('officer.kelola-data.shelter') }}" 
+                
+                {{-- Perubahan Rute Shelter Menjadi Route Resource (Ditambah .index) --}}
+                <a href="{{ route('officer.kelola-data.shelter.index') }}" 
                    class="relative min-h-[62px] flex items-center px-7 text-[13px] font-bold whitespace-nowrap transition-colors {{ $currentTab === 'shelter' ? $activeClass : $inactiveClass }}">
                     Shelter & Posko
                 </a>
+                
                 <a href="{{ route('officer.kelola-data.faskes') }}" 
-                   class="relative min-h-[62px] flex items-center px-7 text-[13px] font-bold whitespace-nowrap transition-colors {{ $currentTab === 'kesehatan' ? $activeClass : $inactiveClass }}">
+                   class="relative min-h-[62px] flex items-center px-7 text-[13px] font-bold whitespace-nowrap transition-colors {{ $currentTab === 'faskes' ? $activeClass : $inactiveClass }}">
                     Fasilitas Kesehatan
                 </a>
                 <a href="{{ route('officer.kelola-data.penanggulangan') }}" 

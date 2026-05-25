@@ -154,10 +154,14 @@
 @push('scripts')
 <script type="module">
 document.addEventListener('DOMContentLoaded', function () {
-    var mapCenter = [-6.2000, 106.8166];
-    var map = L.map('map', {
-        zoomControl: false
-    }).setView(mapCenter, 13);
+    
+    var defaultCenter = [-6.2000, 106.8166];
+    
+    var radiusSlider = document.getElementById('radiusSlider');
+    var radiusLabel = document.getElementById('radiusLabel');
+    var radiusMeters = parseFloat(radiusSlider.value) * 1000; 
+    
+    var currentCenterLatLng = L.latLng(defaultCenter[0], defaultCenter[1]);
 
     L.control.zoom({
         position: 'bottomright'
@@ -168,7 +172,6 @@ document.addEventListener('DOMContentLoaded', function () {
         attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
-    // 2. Buat Lingkaran Geofencing (Radar)
     var geofenceCircle = L.circle(defaultCenter, {
         color: '#FF7F3E',        
         fillColor: '#FF7F3E',    
@@ -176,8 +179,73 @@ document.addEventListener('DOMContentLoaded', function () {
         radius: radiusMeters            
     }).addTo(map);
 
-    var markerMenteng = L.marker([-6.1944, 106.8330]).addTo(map)
-        .bindPopup('<b>SDN 01 Menteng</b><br>Status: Siaga<br>Terdaftar: 120 Orang');
+    var incidentData = {!! json_encode($mapData ?? []) !!};
+    var markersLayer = L.featureGroup().addTo(map);
+
+    function renderMarkersInRadius(centerLatLng) {
+        markersLayer.clearLayers(); 
+
+        if (incidentData.length > 0) {
+            incidentData.forEach(function(incident) {
+                if (incident.lat && incident.lng) {
+                    var incidentLatLng = L.latLng(incident.lat, incident.lng);
+                    var distance = map.distance(centerLatLng, incidentLatLng);
+
+                    if (distance <= radiusMeters) {
+                        var pinSVG = `
+                            <div style="position: relative; width: 32px; height: 42px; display: flex; justify-content: center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="width: 32px; height: 42px; filter: drop-shadow(0px 5px 4px rgba(0,0,0,0.3));">
+                                    <path fill="${incident.status}" stroke="#ffffff" stroke-width="20" d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
+                                </svg>
+                            </div>
+                        `;
+
+                        var customIcon = L.divIcon({
+                            className: 'bg-transparent border-0',
+                            html: pinSVG,
+                            iconSize: [32, 42],
+                            iconAnchor: [16, 42], 
+                            popupAnchor: [0, -42] 
+                        });
+
+                        var marker = L.marker(incidentLatLng, {icon: customIcon})
+                            .bindPopup(
+                                '<strong style="color:' + incident.status + '">' + incident.title + '</strong><br>' + 
+                                (incident.desc || 'Titik Laporan') + 
+                                '<br><small class="text-slate-500 font-bold">Jarak: ' + (distance/1000).toFixed(1) + ' KM</small>'
+                            );
+                        
+                        markersLayer.addLayer(marker);
+                    }
+                }
+            });
+        }
+    }
+
+    radiusSlider.addEventListener('input', function() {
+        var kmValue = parseFloat(this.value);
+        radiusLabel.textContent = kmValue.toFixed(1) + ' KM';
+        radiusMeters = kmValue * 1000;
+        geofenceCircle.setRadius(radiusMeters);
+        
+        renderMarkersInRadius(currentCenterLatLng);
+        map.fitBounds(geofenceCircle.getBounds(), { padding: [30, 30] }); 
+    });
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                currentCenterLatLng = L.latLng(position.coords.latitude, position.coords.longitude);
+
+                geofenceCircle.setLatLng(currentCenterLatLng);
+
+                L.circleMarker(currentCenterLatLng, {
+                    radius: 7,
+                    fillColor: "#3B82F6", 
+                    color: "#ffffff",
+                    weight: 2,
+                    fillOpacity: 1
+                }).addTo(map).bindPopup("<b>Posisi Anda</b>").openPopup();
 
     var markerIstiqlal = L.marker([-6.1702, 106.8310]).addTo(map)
         .bindPopup('<b>Masjid Istiqlal</b><br>Status: <span style="color:red;">Penuh</span><br>Kapasitas: 100%');
