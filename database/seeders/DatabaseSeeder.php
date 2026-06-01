@@ -24,7 +24,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UserSeeder::class,]);
+            UserSeeder::class,
+            SafetyGuideSeeder::class,
+        ]);
 
         $user = User::query()->updateOrCreate(
             ['email' => 'user@siaga.test'],
