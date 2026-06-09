@@ -5,6 +5,16 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
 <style>
     .leaflet-routing-container { display: none !important; }
+    
+    @keyframes pulse-red {
+        0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0.7)); }
+        50% { transform: scale(1.1); filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.9)); }
+        100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0)); }
+    }
+    
+    .warning-pulse svg {
+        animation: pulse-red 1.5s infinite;
+    }
 </style>
 @endpush
 
@@ -141,14 +151,25 @@ document.addEventListener('DOMContentLoaded', function () {
     // =============================================
     // HELPER: SVG PIN ICON
     // =============================================
-    function buatPinIcon(warna) {
+    function buatPinIcon(warna, typeSlug = '', isWarning = false) {
+        let svgPath = `M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z`; // Default pin
+        
+        if (typeSlug === 'shelter') {
+            // House/Shelter Icon path
+            svgPath = `M54.1 256l-16-16L192 86l153.9 154-16 16-137.9-138L54.1 256z M192 128l112 112V416H224V320h-64v96H80V240L192 128z`;
+        } else if (typeSlug === 'emergency_post') {
+            // Tent/Post Icon path (simplification)
+            svgPath = `M249.6 150.3l128 256H368v32H16v-32h9.6l128-256L192 72l38.4 78.3zM164 256l-64 128h128L164 256z`;
+        }
+
+        let animationClass = isWarning ? 'warning-pulse' : '';
+
         return L.divIcon({
             className: 'bg-transparent border-0',
-            html: `<div style="width:28px;height:38px;display:flex;justify-content:center;">
+            html: `<div style="width:28px;height:38px;display:flex;justify-content:center;" class="${animationClass}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"
                     style="width:28px;height:38px;filter:drop-shadow(0 3px 4px rgba(0,0,0,0.25));">
-                    <path fill="${warna}" stroke="#ffffff" stroke-width="18"
-                        d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
+                    <path fill="${warna}" stroke="#ffffff" stroke-width="15" d="${svgPath}"/>
                 </svg>
             </div>`,
             iconSize: [28, 38], iconAnchor: [14, 38], popupAnchor: [0, -40]
