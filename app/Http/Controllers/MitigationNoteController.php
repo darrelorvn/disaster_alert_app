@@ -7,13 +7,14 @@ use App\Models\MitigationNote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\DisasterEvent; // Tambahkan ini
+use App\Models\DisasterEvent;
+use App\Models\DisasterReport;
 
 class MitigationNoteController extends Controller
 {
     public function index(Request $request)
     {
-        $query = MitigationNote::with('disasterEvent'); // Eager load
+        $query = MitigationNote::with(['disasterEvent', 'disasterReport']); // Eager load
 
         if ($request->filled('disaster_type') && $request->disaster_type !== 'Semua') {
             $query->where('disaster_type', $request->disaster_type);
@@ -26,15 +27,15 @@ class MitigationNoteController extends Controller
 
     public function create()
     {
-        $events = DisasterEvent::where('status', '!=', 'resolved')->latest()->get();
-        return view('pages.officer.kelola-data.create.catatan-penanggulangan', compact('events'));
+        $reports = DisasterReport::latest()->get();
+        return view('pages.officer.kelola-data.create.catatan-penanggulangan', compact('reports'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'disaster_event_id' => 'nullable|exists:disaster_events,id', // Tambahkan ini
+            'disaster_report_id' => 'nullable|exists:disaster_reports,id',
             'disaster_type' => 'required|string',
             'affected_area' => 'required|string|max:255',
             'action_date' => 'required|date',
@@ -44,6 +45,14 @@ class MitigationNoteController extends Controller
 
         $validated['officer_id'] = Auth::id();
 
+        // Jika terhubung ke laporan, hubungkan juga ke event yang sama jika ada
+        if ($request->filled('disaster_report_id')) {
+            $report = DisasterReport::find($request->disaster_report_id);
+            if ($report && $report->disaster_event_id) {
+                $validated['disaster_event_id'] = $report->disaster_event_id;
+            }
+        }
+
         MitigationNote::create($validated);
 
         return redirect()->route('officer.kelola-data.penanggulangan.index')
@@ -52,27 +61,34 @@ class MitigationNoteController extends Controller
 
     public function show(MitigationNote $penanggulangan)
     {
-        $penanggulangan->load('disasterEvent');
+        $penanggulangan->load(['disasterEvent', 'disasterReport']);
         return view('pages.officer.kelola-data.detail.catatan-penanggulangan', compact('penanggulangan'));
     }
 
     public function edit(MitigationNote $penanggulangan)
     {
-        $events = DisasterEvent::latest()->get();
-        return view('pages.officer.kelola-data.update.catatan-penanggulangan', compact('penanggulangan', 'events'));
+        $reports = DisasterReport::latest()->get();
+        return view('pages.officer.kelola-data.update.catatan-penanggulangan', compact('penanggulangan', 'reports'));
     }
 
     public function update(Request $request, MitigationNote $penanggulangan)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'disaster_event_id' => 'nullable|exists:disaster_events,id', // Tambahkan ini
+            'disaster_report_id' => 'nullable|exists:disaster_reports,id',
             'disaster_type' => 'required|string',
             'affected_area' => 'required|string|max:255',
             'action_date' => 'required|date',
             'description' => 'required|string',
             'metadata' => 'nullable|array',
         ]);
+
+        if ($request->filled('disaster_report_id')) {
+            $report = DisasterReport::find($request->disaster_report_id);
+            if ($report && $report->disaster_event_id) {
+                $validated['disaster_event_id'] = $report->disaster_event_id;
+            }
+        }
 
         $penanggulangan->update($validated);
 

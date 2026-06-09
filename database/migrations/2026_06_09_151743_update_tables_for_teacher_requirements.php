@@ -23,6 +23,7 @@ return new class extends Migration
         // 3. Relasikan Tindakan Penanggulangan dengan Laporan/Event Bencana
         Schema::table('mitigation_notes', function (Blueprint $table) {
             $table->foreignId('disaster_event_id')->nullable()->after('officer_id')->constrained()->nullOnDelete();
+            $table->foreignId('disaster_report_id')->nullable()->after('disaster_event_id')->constrained()->nullOnDelete();
         });
     }
 
@@ -38,6 +39,7 @@ return new class extends Migration
 
         Schema::table('mitigation_notes', function (Blueprint $table) {
             $table->dropConstrainedForeignId('disaster_event_id');
+            $table->dropConstrainedForeignId('disaster_report_id');
         });
     }
 };

@@ -208,6 +208,7 @@
 
 @push('scripts')
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('distributionMap')) {
@@ -232,36 +233,33 @@ document.addEventListener('DOMContentLoaded', function () {
         var incidentData = {!! json_encode($mapData) !!};
 
         if (incidentData.length > 0) {
+            var heatPoints = [];
             var bounds = [];
             
             incidentData.forEach(function(incident) {
                 if (incident.lat && incident.lng) {
-                    
-                    // Membuat Marker Pin Lokasi Klasik menggunakan SVG
-                    var pinSVG = `
-                        <div style="position: relative; width: 32px; height: 42px; display: flex; justify-content: center;">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="width: 32px; height: 42px; filter: drop-shadow(0px 5px 4px rgba(0,0,0,0.3));">
-                                <path fill="${incident.status}" stroke="#ffffff" stroke-width="20" d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
-                            </svg>
-                        </div>
-                    `;
-
-                    var customIcon = L.divIcon({
-                        className: 'bg-transparent border-0', // Hilangkan style default leaflet divIcon
-                        html: pinSVG,
-                        iconSize: [32, 42],
-                        iconAnchor: [16, 42], // Mengatur titik jangkar agar pas di ujung bawah jarum
-                        popupAnchor: [0, -42] // Mengatur agar popup muncul tepat di atas marker
-                    });
-
-                    L.marker([incident.lat, incident.lng], {icon: customIcon}).addTo(map)
-                        .bindPopup('<strong style="color:' + incident.status + '">' + incident.title + '</strong><br>' + (incident.desc || 'Titik Laporan'));
-                    
+                    // Heatmap point: [lat, lng, intensity]
+                    // Kita asumsikan intensitas 1 per laporan
+                    heatPoints.push([incident.lat, incident.lng, 0.8]);
                     bounds.push([incident.lat, incident.lng]);
                 }
             });
 
-            // Otomatis menyesuaikan zoom dan posisi peta agar semua marker terlihat
+            // Konfigurasi Heatmap
+            var heat = L.heatLayer(heatPoints, {
+                radius: 25,
+                blur: 15,
+                maxZoom: 10,
+                gradient: {
+                    0.2: 'blue',
+                    0.4: 'cyan',
+                    0.6: 'lime',
+                    0.8: 'yellow',
+                    1.0: 'red'
+                }
+            }).addTo(map);
+
+            // Otomatis menyesuaikan zoom dan posisi peta agar semua data terlihat
             if (bounds.length > 0) {
                 map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
             }

@@ -28,14 +28,14 @@
                 </div>
 
                 <div class="md:col-span-2">
-                    <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Hubungkan dengan Kejadian Bencana (Opsional)</label>
-                    <select name="disaster_event_id" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold outline-none focus:border-orange-400 focus:bg-white">
-                        <option value="">-- Tidak Terhubung ke Kejadian Spesifik --</option>
-                        @foreach($events as $event)
-                            <option value="{{ $event->id }}">{{ strtoupper($event->type) }} - {{ $event->title }} ({{ $event->occurred_at->format('d M Y') }})</option>
+                    <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Hubungkan dengan Laporan Bencana (Opsional)</label>
+                    <select name="disaster_report_id" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold outline-none focus:border-orange-400 focus:bg-white">
+                        <option value="">-- Tidak Terhubung ke Laporan Spesifik --</option>
+                        @foreach($reports as $report)
+                            <option value="{{ $report->id }}">{{ strtoupper($report->type) }} - {{ $report->location_name ?? 'Titik Peta' }} ({{ $report->occurred_at->format('d M Y') }})</option>
                         @endforeach
                     </select>
-                    <p class="mt-1 text-[10px] text-slate-400 font-medium">Memungkinkan Anda melacak tindakan ini di riwayat bencana tersebut.</p>
+                    <p class="mt-1 text-[10px] text-slate-400 font-medium">Memungkinkan Anda melacak tindakan ini di riwayat laporan tersebut.</p>
                 </div>
 
                 <div>

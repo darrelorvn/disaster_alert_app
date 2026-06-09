@@ -75,9 +75,25 @@ class DisasterReportManagementController extends Controller
             'longitude' => 'nullable|numeric|between:-180,180',
             'reporter_name' => 'nullable|string|max:255',
             'status' => 'required|string',
+            'mitigation_title' => 'required_if:status,in_progress,handled|nullable|string|max:255',
+            'mitigation_description' => 'required_if:status,in_progress,handled|nullable|string',
         ]);
 
         $report->update($validated);
+
+        // Jika status diubah ke in_progress atau handled, buat catatan penanggulangan
+        if (in_array($request->status, ['in_progress', 'handled'])) {
+            \App\Models\MitigationNote::create([
+                'officer_id' => Auth::id(),
+                'disaster_report_id' => $report->id,
+                'disaster_event_id' => $report->disaster_event_id,
+                'title' => $request->mitigation_title,
+                'description' => $request->mitigation_description,
+                'disaster_type' => $report->type,
+                'affected_area' => $report->location_name ?? 'Area Laporan',
+                'action_date' => now(),
+            ]);
+        }
 
         return redirect()->route('officer.kelola-data.laporan')
             ->with('success', 'Laporan bencana berhasil diperbarui.');

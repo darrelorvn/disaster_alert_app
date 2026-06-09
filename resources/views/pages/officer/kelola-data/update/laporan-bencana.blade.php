@@ -87,6 +87,29 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Section Catatan Penanggulangan (Wajib jika status diproses/selesai) --}}
+                <div id="mitigation_note_section" class="md:col-span-2 mt-4 p-5 bg-orange-50 border border-orange-200 rounded-xl hidden">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="p-1.5 bg-orange-500 rounded-lg text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-orange-900 uppercase tracking-tight">Input Catatan Penanggulangan</h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Judul Tindakan <span class="text-red-500">*</span></label>
+                            <input type="text" name="mitigation_title" id="mitigation_title" placeholder="Contoh: Pengiriman Logistik, Evakuasi Warga..." class="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold outline-none focus:border-orange-400">
+                            @error('mitigation_title') <p class="mt-1 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Deskripsi Penanggulangan <span class="text-red-500">*</span></label>
+                            <textarea name="mitigation_description" id="mitigation_description" rows="3" placeholder="Jelaskan tindakan yang telah atau sedang dilakukan secara detail..." class="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold outline-none resize-none focus:border-orange-400"></textarea>
+                            @error('mitigation_description') <p class="mt-1 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="mt-6 flex justify-end">
@@ -135,6 +158,27 @@ document.addEventListener('DOMContentLoaded', function () {
         marker.setLatLng(e.latlng);
         updateInputs(e.latlng.lat, e.latlng.lng);
     });
+
+    // Logic Tampilkan Catatan Penanggulangan
+    const statusSelect = document.querySelector('select[name="status"]');
+    const mitigationSection = document.getElementById('mitigation_note_section');
+    const mitigationTitle = document.getElementById('mitigation_title');
+    const mitigationDesc = document.getElementById('mitigation_description');
+
+    function toggleMitigationSection() {
+        if (statusSelect.value === 'in_progress' || statusSelect.value === 'handled') {
+            mitigationSection.classList.remove('hidden');
+            mitigationTitle.setAttribute('required', 'required');
+            mitigationDesc.setAttribute('required', 'required');
+        } else {
+            mitigationSection.classList.add('hidden');
+            mitigationTitle.removeAttribute('required');
+            mitigationDesc.removeAttribute('required');
+        }
+    }
+
+    statusSelect.addEventListener('change', toggleMitigationSection);
+    toggleMitigationSection(); // Run on load
     
     setTimeout(() => map.invalidateSize(), 300);
 });

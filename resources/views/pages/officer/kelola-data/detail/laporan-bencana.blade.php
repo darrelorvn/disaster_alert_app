@@ -38,6 +38,19 @@
                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Status</p>
                     <p class="text-sm font-bold text-orange-500 uppercase">{{ $report->status }}</p>
                 </div>
+
+                @if($report->disasterEvent && $report->disasterEvent->expired_at)
+                <div class="p-3 bg-red-50 border border-red-100 rounded-lg">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-red-400">Waktu Expired</p>
+                    <p class="text-sm font-bold text-red-600">
+                        {{ \Carbon\Carbon::parse($report->disasterEvent->expired_at)->format('d M Y, H:i') }}
+                        @if(\Carbon\Carbon::parse($report->disasterEvent->expired_at)->isPast())
+                            <span class="ml-2 px-1.5 py-0.5 bg-red-600 text-white text-[10px] rounded uppercase">Sudah Berakhir</span>
+                        @endif
+                    </p>
+                </div>
+                @endif
+
                 <div>
                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Waktu Kejadian</p>
                     <p class="text-sm font-bold text-slate-800">{{ \Carbon\Carbon::parse($report->occurred_at)->format('d M Y, H:i') }}</p>

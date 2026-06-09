@@ -11,6 +11,14 @@ class OfficerPageController extends Controller
 {
     public function home(Request $request)
     {
+        // Auto-clear expired disasters
+        \App\Models\DisasterEvent::whereNotNull('expired_at')
+            ->where('expired_at', '<=', now())
+            ->each(function ($event) {
+                \App\Models\DisasterReport::where('disaster_event_id', $event->id)->delete();
+                $event->delete();
+            });
+
         // 1. Inisialisasi Query Dasar
         $query = DisasterReport::query();
 

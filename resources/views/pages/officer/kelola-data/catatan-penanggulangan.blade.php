@@ -44,13 +44,21 @@
                     {{ strtoupper(str_replace('_', ' ', $note->disaster_type)) }}
                 </td>
                 <td class="py-[18px] px-5 border-t border-slate-100 text-slate-600 text-[13px] align-middle">
-                    @if($note->disasterEvent)
+                    @if($note->disasterReport)
+                        <div class="flex flex-col">
+                            <span class="text-blue-600 font-black text-[11px] uppercase tracking-tighter flex items-center gap-1">
+                                <i class="fas fa-file-alt"></i>
+                                Laporan: {{ $note->disasterReport->location_name ?? 'Titik Peta' }}
+                            </span>
+                            <span class="text-[10px] text-slate-400">{{ $note->disasterReport->occurred_at ? $note->disasterReport->occurred_at->format('d/m/Y') : '-' }}</span>
+                        </div>
+                    @elseif($note->disasterEvent)
                         <div class="flex flex-col">
                             <span class="text-orange-600 font-black text-[11px] uppercase tracking-tighter flex items-center gap-1">
                                 <i class="fas fa-link"></i>
-                                {{ $note->disasterEvent->title }}
+                                Kejadian: {{ $note->disasterEvent->title }}
                             </span>
-                            <span class="text-[10px] text-slate-400">{{ $note->disasterEvent->occurred_at->format('d/m/Y') }}</span>
+                            <span class="text-[10px] text-slate-400">{{ $note->disasterEvent->occurred_at ? $note->disasterEvent->occurred_at->format('d/m/Y') : '-' }}</span>
                         </div>
                     @else
                         <span class="text-[10px] text-slate-400 font-bold uppercase italic">Umum</span>
