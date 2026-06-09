@@ -9,14 +9,12 @@
             <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">
                 <a href="{{ route('user.tindakan-preventif.index') }}" class="hover:text-orange-500 transition-colors">Tindakan Preventif</a>
                 <span class="mx-1">/</span>
-                <a href="{{ route('user.tindakan-preventif.show', $tindakanPreventif->id) }}" class="hover:text-orange-500 transition-colors">Detail</a>
-                <span class="mx-1">/</span>
-                <span class="text-orange-500">Edit</span>
+                <span class="text-orange-500">Edit Catatan</span>
             </p>
             <h2 class="text-2xl font-bold tracking-tight text-slate-800">Edit Tindakan Preventif</h2>
-            <p class="text-sm text-slate-500 mt-1">Perbarui informasi tindakan pencegahan bencana yang telah dicatat.</p>
+            <p class="text-sm text-slate-500 mt-1">Perbarui data tindakan pencegahan yang telah Anda catat.</p>
         </div>
-        <a href="{{ route('user.tindakan-preventif.show', $tindakanPreventif->id) }}"
+        <a href="{{ route('user.tindakan-preventif.index') }}"
             class="inline-flex items-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50 shadow-sm">
             <i class="fa-solid fa-arrow-left"></i>
             Kembali
@@ -41,8 +39,7 @@
                         id="aktivitas"
                         name="aktivitas"
                         value="{{ old('aktivitas', $tindakanPreventif->aktivitas) }}"
-                        placeholder="Contoh: Membersihkan saluran drainase di sekitar rumah"
-                        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/10 @error('aktivitas') border-red-400 bg-red-50 @enderror">
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-800 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/10 @error('aktivitas') border-red-400 bg-red-50 @enderror">
                     @error('aktivitas')
                         <p class="mt-1.5 text-xs font-bold text-red-500">{{ $message }}</p>
                     @enderror
@@ -57,7 +54,7 @@
                         type="datetime-local"
                         id="waktu_tindakan"
                         name="waktu_tindakan"
-                        value="{{ old('waktu_tindakan', \Carbon\Carbon::parse($tindakanPreventif->waktu_tindakan)->format('Y-m-d\TH:i')) }}"
+                        value="{{ old('waktu_tindakan', $tindakanPreventif->waktu_tindakan?->format('Y-m-d\TH:i')) }}"
                         max="{{ now()->format('Y-m-d\TH:i') }}"
                         class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-800 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/10 @error('waktu_tindakan') border-red-400 bg-red-50 @enderror">
                     @error('waktu_tindakan')
@@ -68,7 +65,7 @@
                 {{-- Lokasi --}}
                 <div>
                     <label for="lokasi" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
-                        Lokasi <span class="text-slate-400 text-[10px] normal-case font-semibold">(opsional)</span>
+                        Lokasi
                     </label>
                     <div class="relative">
                         <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
@@ -79,12 +76,34 @@
                             id="lokasi"
                             name="lokasi"
                             value="{{ old('lokasi', $tindakanPreventif->lokasi) }}"
-                            placeholder="Contoh: Jl. Melati No. 10, Cawang"
-                            class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-4 text-sm font-semibold text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/10 @error('lokasi') border-red-400 bg-red-50 @enderror">
+                            class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-4 text-sm font-semibold text-slate-800 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/10">
                     </div>
-                    @error('lokasi')
-                        <p class="mt-1.5 text-xs font-bold text-red-500">{{ $message }}</p>
-                    @enderror
+                </div>
+
+                {{-- Geofencing Data --}}
+                <div class="md:col-span-2 bg-orange-50/50 p-4 rounded-xl border border-orange-100">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-earth-asia text-orange-500 text-sm"></i>
+                        <h4 class="text-xs font-black uppercase tracking-tight text-orange-700">Geofencing & Radius Pantauan</h4>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Latitude</label>
+                            <input type="text" id="latitude" name="latitude" value="{{ old('latitude', $tindakanPreventif->latitude) }}" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-orange-400">
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Longitude</label>
+                            <input type="text" id="longitude" name="longitude" value="{{ old('longitude', $tindakanPreventif->longitude) }}" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-orange-400">
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Radius (KM)</label>
+                            <input type="number" step="0.1" name="radius_km" value="{{ old('radius_km', $tindakanPreventif->radius_km ?? 1.0) }}" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-orange-400">
+                        </div>
+                    </div>
+                    <button type="button" onclick="getLocation()" class="mt-3 text-[10px] font-black uppercase text-orange-600 hover:text-orange-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-crosshairs"></i> Gunakan Lokasi Saat Ini
+                    </button>
                 </div>
 
                 {{-- Deskripsi --}}
@@ -96,8 +115,7 @@
                         id="deskripsi"
                         name="deskripsi"
                         rows="4"
-                        placeholder="Jelaskan secara detail tindakan preventif yang telah Anda lakukan..."
-                        class="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/10 @error('deskripsi') border-red-400 bg-red-50 @enderror">{{ old('deskripsi', $tindakanPreventif->deskripsi) }}</textarea>
+                        class="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-800 outline-none transition focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-500/10 @error('deskripsi') border-red-400 bg-red-50 @enderror">{{ old('deskripsi', $tindakanPreventif->deskripsi) }}</textarea>
                     @error('deskripsi')
                         <p class="mt-1.5 text-xs font-bold text-red-500">{{ $message }}</p>
                     @enderror
@@ -105,38 +123,26 @@
 
                 {{-- Foto Bukti --}}
                 <div class="md:col-span-2">
-                    <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
-                        Foto Bukti <span class="text-slate-400 text-[10px] normal-case font-semibold">(opsional — kosongkan jika tidak ingin mengubah foto)</span>
+                    <label for="foto" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Foto Bukti <span class="text-slate-400 text-[10px] normal-case font-semibold">(opsional)</span>
                     </label>
 
-                    {{-- Foto lama (jika ada) --}}
                     @if($tindakanPreventif->foto)
-                        <div id="foto-lama-wrapper" class="mb-3">
-                            <p class="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Foto Saat Ini</p>
-                            <div class="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                                <img
-                                    src="{{ Storage::url($tindakanPreventif->foto) }}"
-                                    alt="Foto bukti saat ini"
-                                    class="h-16 w-16 rounded-lg object-cover border border-slate-100 shrink-0 cursor-pointer"
-                                    onclick="bukaFotoModal('{{ Storage::url($tindakanPreventif->foto) }}')">
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-xs font-bold text-slate-700 truncate">{{ basename($tindakanPreventif->foto) }}</p>
-                                    <p class="text-[10px] font-semibold text-slate-400 mt-0.5">Foto akan dipertahankan jika tidak ada file baru yang diunggah.</p>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <p class="mb-2 text-[10px] font-bold uppercase text-slate-400">Foto Saat Ini:</p>
+                            <img src="{{ asset('storage/' . $tindakanPreventif->foto) }}" class="h-32 w-48 rounded-lg object-cover border border-slate-200">
                         </div>
                     @endif
 
-                    {{-- Drop zone unggah foto baru --}}
                     <label for="foto"
-                        class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-6 py-8 text-center transition hover:border-orange-400 hover:bg-orange-50/40 @error('foto') border-red-400 bg-red-50 @enderror"
+                        class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center transition hover:border-orange-400 hover:bg-orange-50/40"
                         id="foto-dropzone">
-                        <div class="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition group-hover:bg-orange-100 group-hover:text-orange-500">
-                            <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition group-hover:bg-orange-100 group-hover:text-orange-500">
+                            <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
                         </div>
                         <div>
                             <p class="text-sm font-bold text-slate-600 group-hover:text-orange-600 transition">
-                                {{ $tindakanPreventif->foto ? 'Klik untuk mengganti foto' : 'Klik untuk mengunggah foto' }}
+                                Klik untuk ganti foto
                             </p>
                             <p class="mt-0.5 text-xs text-slate-400">PNG, JPG, atau JPEG — Maks. 2 MB</p>
                         </div>
@@ -151,10 +157,9 @@
 
                     {{-- Preview foto baru --}}
                     <div id="foto-preview-wrapper" class="mt-3 hidden">
-                        <p class="mb-2 text-[10px] font-bold uppercase tracking-wider text-orange-400">Foto Baru (Pratinjau)</p>
-                        <div class="flex items-center gap-3 rounded-lg border border-orange-200 bg-orange-50/50 p-3">
-                            <img id="foto-preview-img" src="" alt="Preview foto baru"
-                                class="h-16 w-16 rounded-lg object-cover border border-orange-100 shrink-0">
+                        <div class="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3">
+                            <img id="foto-preview-img" src="" alt="Preview foto"
+                                class="h-16 w-16 rounded-lg object-cover border border-slate-100 shrink-0">
                             <div class="min-w-0 flex-1">
                                 <p id="foto-preview-name" class="truncate text-xs font-bold text-slate-700"></p>
                                 <p id="foto-preview-size" class="text-[10px] text-slate-400 font-semibold mt-0.5"></p>
@@ -178,30 +183,18 @@
 
             {{-- Action Buttons --}}
             <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                <a href="{{ route('user.tindakan-preventif.show', $tindakanPreventif->id) }}"
+                <a href="{{ route('user.tindakan-preventif.index') }}"
                     class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-6 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50">
                     Batal
                 </a>
                 <button type="submit"
                     class="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm shadow-orange-500/20 transition hover:bg-orange-600">
                     <i class="fa-solid fa-floppy-disk"></i>
-                    Simpan Perubahan
+                    Update Catatan
                 </button>
             </div>
 
         </form>
-    </div>
-</div>
-
-{{-- Modal Foto Lama --}}
-<div id="foto-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onclick="tutupFotoModal()">
-    <div class="relative max-h-[90vh] max-w-4xl w-full" onclick="event.stopPropagation()">
-        <button onclick="tutupFotoModal()"
-            class="absolute -top-3 -right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white text-slate-700 shadow-lg transition hover:bg-slate-100">
-            <i class="fa-solid fa-xmark text-sm"></i>
-        </button>
-        <img id="foto-modal-img" src="" alt="Foto diperbesar"
-            class="w-full max-h-[90vh] rounded-xl object-contain shadow-2xl">
     </div>
 </div>
 @endsection
@@ -241,24 +234,17 @@
         dropzone.classList.remove('hidden');
     }
 
-    function bukaFotoModal(src) {
-        const modal = document.getElementById('foto-modal');
-        const img   = document.getElementById('foto-modal-img');
-        img.src = src;
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        document.body.style.overflow = 'hidden';
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById('latitude').value = position.coords.latitude;
+                document.getElementById('longitude').value = position.coords.longitude;
+            }, function() {
+                alert('Gagal mendapatkan lokasi. Pastikan GPS aktif.');
+            });
+        } else {
+            alert('Browser tidak mendukung geolokasi.');
+        }
     }
-
-    function tutupFotoModal() {
-        const modal = document.getElementById('foto-modal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        document.body.style.overflow = '';
-    }
-
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') tutupFotoModal();
-    });
 </script>
 @endpush

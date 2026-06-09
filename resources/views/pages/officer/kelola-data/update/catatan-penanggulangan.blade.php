@@ -29,6 +29,18 @@
                     @error('title') <p class="mt-1 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
                 </div>
 
+                <div class="md:col-span-2">
+                    <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Hubungkan dengan Kejadian Bencana</label>
+                    <select name="disaster_event_id" class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold outline-none focus:border-orange-400 focus:bg-white">
+                        <option value="">-- Tidak Terhubung ke Kejadian Spesifik --</option>
+                        @foreach($events as $event)
+                            <option value="{{ $event->id }}" {{ old('disaster_event_id', $penanggulangan->disaster_event_id) == $event->id ? 'selected' : '' }}>
+                                {{ strtoupper($event->type) }} - {{ $event->title }} ({{ $event->occurred_at->format('d M Y') }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <div>
                     <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Tipe Bencana</label>
                     <select name="disaster_type" required class="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold outline-none focus:border-orange-400 focus:bg-white">

@@ -27,8 +27,9 @@
         <thead class="bg-slate-100">
             <tr>
                 <th class="py-[17px] px-5 text-slate-700 text-[11px] font-black tracking-[0.08em] text-left uppercase whitespace-nowrap">Tindakan Penanggulangan</th>
-                <th class="py-[17px] px-5 text-slate-700 text-[11px] font-black tracking-[0.08em] text-left uppercase whitespace-nowrap">Terkait Bencana</th>
-                <th class="py-[17px] px-5 text-slate-700 text-[11px] font-black tracking-[0.08em] text-left uppercase whitespace-nowrap">Area</th>
+                <th class="py-[17px] px-5 text-slate-700 text-[11px] font-black tracking-[0.08em] text-left uppercase whitespace-nowrap">Tipe Bencana</th>
+                <th class="py-[17px] px-5 text-slate-700 text-[11px] font-black tracking-[0.08em] text-left uppercase whitespace-nowrap">Kejadian Terkait</th>
+                <th class="py-[17px] px-5 text-slate-700 text-[11px] font-black tracking-[0.08em] text-left uppercase whitespace-nowrap">Status</th>
                 <th class="py-[17px] px-5 text-slate-700 text-[11px] font-black tracking-[0.08em] text-left uppercase whitespace-nowrap">Aksi</th>
             </tr>
         </thead>
@@ -36,14 +37,25 @@
             @foreach($notes as $note)
             <tr class="hover:bg-slate-50 transition-colors">
                 <td class="py-[18px] px-5 border-t border-slate-100 text-slate-900 text-[13px] font-black align-middle max-w-[260px]">
-                    {{ $note->title }}
+                    {{ $note->title }}<br>
+                    <span class="text-[10px] text-slate-400 font-medium">Area: {{ $note->affected_area }}</span>
                 </td>
                 <td class="py-[18px] px-5 border-t border-slate-100 text-slate-600 text-[13px] align-middle">
-                    {{ strtoupper(str_replace('_', ' ', $note->disaster_type)) }}<br>
-                    <span class="text-[11px] text-slate-400">{{ $note->affected_area }}</span>
+                    {{ strtoupper(str_replace('_', ' ', $note->disaster_type)) }}
                 </td>
                 <td class="py-[18px] px-5 border-t border-slate-100 text-slate-600 text-[13px] align-middle">
-                    {{ $note->officer_id }} </td>
+                    @if($note->disasterEvent)
+                        <div class="flex flex-col">
+                            <span class="text-orange-600 font-black text-[11px] uppercase tracking-tighter flex items-center gap-1">
+                                <i class="fas fa-link"></i>
+                                {{ $note->disasterEvent->title }}
+                            </span>
+                            <span class="text-[10px] text-slate-400">{{ $note->disasterEvent->occurred_at->format('d/m/Y') }}</span>
+                        </div>
+                    @else
+                        <span class="text-[10px] text-slate-400 font-bold uppercase italic">Umum</span>
+                    @endif
+                </td>
                 <td class="py-[18px] px-5 border-t border-slate-100 text-[13px] align-middle">
                     <span class="inline-flex items-center justify-center rounded-full py-1 px-2.5 text-[10px] font-black uppercase bg-emerald-100 text-emerald-600">
                         Terverifikasi

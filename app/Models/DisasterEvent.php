@@ -18,6 +18,7 @@ class DisasterEvent extends Model
         'longitude',
         'occurred_at',
         'resolved_at',
+        'expired_at',
         'metadata',
     ];
 
@@ -25,6 +26,7 @@ class DisasterEvent extends Model
         'metadata' => 'array',
         'occurred_at' => 'datetime',
         'resolved_at' => 'datetime',
+        'expired_at' => 'datetime',
         'latitude' => 'float',
         'longitude' => 'float',
     ];

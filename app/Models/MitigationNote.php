@@ -9,6 +9,7 @@ class MitigationNote extends Model
 {
     protected $fillable = [
         'officer_id',
+        'disaster_event_id',
         'title',
         'disaster_type',
         'affected_area',
@@ -25,5 +26,10 @@ class MitigationNote extends Model
     public function officer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'officer_id');
+    }
+
+    public function disasterEvent(): BelongsTo
+    {
+        return $this->belongsTo(DisasterEvent::class);
     }
 }

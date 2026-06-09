@@ -84,6 +84,32 @@
                     @enderror
                 </div>
 
+                {{-- Geofencing Data --}}
+                <div class="md:col-span-2 bg-orange-50/50 p-4 rounded-xl border border-orange-100">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-earth-asia text-orange-500 text-sm"></i>
+                        <h4 class="text-xs font-black uppercase tracking-tight text-orange-700">Geofencing & Radius Pantauan</h4>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Latitude</label>
+                            <input type="text" id="latitude" name="latitude" value="{{ old('latitude') }}" placeholder="Contoh: -6.123" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-orange-400">
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Longitude</label>
+                            <input type="text" id="longitude" name="longitude" value="{{ old('longitude') }}" placeholder="Contoh: 106.456" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-orange-400">
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-[10px] font-bold uppercase text-slate-400">Radius (KM)</label>
+                            <input type="number" step="0.1" name="radius_km" value="{{ old('radius_km', 1.0) }}" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-orange-400">
+                        </div>
+                    </div>
+                    <button type="button" onclick="getLocation()" class="mt-3 text-[10px] font-black uppercase text-orange-600 hover:text-orange-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-crosshairs"></i> Gunakan Lokasi Saat Ini
+                    </button>
+                </div>
+
                 {{-- Deskripsi --}}
                 <div class="md:col-span-2">
                     <label for="deskripsi" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -205,6 +231,19 @@
         input.value = '';
         previewWrapper.classList.add('hidden');
         dropzone.classList.remove('hidden');
+    }
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById('latitude').value = position.coords.latitude;
+                document.getElementById('longitude').value = position.coords.longitude;
+            }, function() {
+                alert('Gagal mendapatkan lokasi. Pastikan GPS aktif.');
+            });
+        } else {
+            alert('Browser tidak mendukung geolokasi.');
+        }
     }
 </script>
 @endpush

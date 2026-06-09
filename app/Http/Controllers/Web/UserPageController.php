@@ -62,10 +62,19 @@ class UserPageController extends Controller
                 ReportStatus::Verified->value,
                 ReportStatus::InProgress->value
             ])
+            // Filter laporan yang belum expired (jika terhubung ke event)
+            ->where(function ($query) {
+                $query->whereDoesntHave('disasterEvent')
+                    ->orWhereHas('disasterEvent', function ($q) {
+                        $q->whereNull('expired_at')
+                            ->orWhere('expired_at', '>', now());
+                    });
+            })
             ->get()
             ->map(function ($r) {
                 return [
                     'is_route'    => false,
+                    'is_warning'  => true, // Tandai sebagai peringatan
                     'lat'         => $r->latitude,
                     'lng'         => $r->longitude,
                     'title'       => strtoupper(str_replace('_', ' ', $r->type)),
@@ -94,9 +103,7 @@ class UserPageController extends Controller
                         'in_progress' => '#2563eb',
                         default       => '#64748b'
                     },
-                    'details'     => $r->occurred_at
-                        ? Carbon::parse($r->occurred_at)->diffForHumans()
-                        : 'Baru saja',
+                    'details'     => ($r->occurred_at ? Carbon::parse($r->occurred_at)->diffForHumans() : 'Baru saja') . ' • Hubungi: ' . ($r->reporter_phone ?? 'N/A'),
                 ];
             });
 

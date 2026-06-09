@@ -36,6 +36,15 @@ class OfficerPageController extends Controller
         // 4. Ambil Laporan Terbaru untuk Tabel
         $latestReports = (clone $query)->latest()->take(10)->get();
 
+        // 4.1. Lokasi dengan bencana berulang (Recurring Disasters)
+        $recurringDisasters = DisasterReport::select('location_name', 'type')
+            ->selectRaw('count(*) as total_occurrences')
+            ->groupBy('location_name', 'type')
+            ->having('total_occurrences', '>', 1)
+            ->orderByDesc('total_occurrences')
+            ->take(5)
+            ->get();
+
         // 5. Ambil Data Peta
         $mapQuery = clone $query;
         
@@ -72,7 +81,8 @@ class OfficerPageController extends Controller
             'unhandledReports', 
             'activeAreas', 
             'latestReports', 
-            'mapData'
+            'mapData',
+            'recurringDisasters'
         ));
     }
 

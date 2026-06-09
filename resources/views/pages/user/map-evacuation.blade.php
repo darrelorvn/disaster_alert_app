@@ -247,8 +247,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
             } else {
                 // Gambar pin biasa
-                var marker = L.marker(item.latlng, { icon: buatPinIcon(item.color) })
-                    .bindPopup(`<strong style="color:${item.color}">${item.title}</strong><br>${item.subtitle}`);
+                var marker = L.marker(item.latlng, { icon: buatPinIcon(item.color, item.type_slug, item.is_warning) });
+                
+                let popupContent = `<div class="p-1">
+                    <strong style="color:${item.color}; font-size: 14px;">${item.title}</strong><br>
+                    <span style="font-size: 12px; color: #64748b;">${item.subtitle}</span><br>
+                    <hr style="margin: 8px 0; border: 0; border-top: 1px solid #e2e8f0;">
+                    <p style="font-size: 11px; margin: 0;">${item.details}</p>
+                </div>`;
+
+                if (item.is_warning) {
+                    popupContent = `<div class="p-2 border-2 border-red-500 rounded-lg bg-red-50">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fas fa-triangle-exclamation text-red-600"></i>
+                            <strong class="text-red-700 text-sm uppercase">PERINGATAN BENCANA</strong>
+                        </div>
+                        <strong class="text-slate-800 text-base">${item.title}</strong><br>
+                        <span class="text-slate-600 text-xs font-bold underline">${item.subtitle}</span>
+                        <p class="text-slate-500 text-[10px] mt-2 leading-relaxed bg-white p-2 rounded border border-red-100">${item.details}</p>
+                    </div>`;
+                }
+
+                marker.bindPopup(popupContent);
                 markersLayer.addLayer(marker);
             }
 
@@ -318,6 +338,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 L.circleMarker(currentCenterLatLng, {
                     radius: 8, fillColor: '#3B82F6', color: '#ffffff', weight: 2, fillOpacity: 1
+                }).addTo(map).bindPopup('<b>Posisi Anda Saat Ini</b>').openPopup();
+
+                renderView(currentCenterLatLng);
+                map.fitBounds(geofenceCircle.getBounds(), { padding: [30, 30] });
+            },
+            function () {
+                console.warn('Akses lokasi ditolak.');
+                renderView(currentCenterLatLng);
+            }
+        );
+    } else {
+        renderView(currentCenterLatLng);
+    }
+
+});
+</script>
+@endpush: 1
                 }).addTo(map).bindPopup('<b>Posisi Anda Saat Ini</b>').openPopup();
 
                 renderView(currentCenterLatLng);

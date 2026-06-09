@@ -27,7 +27,10 @@ class StoreTindakanPreventifRequest extends FormRequest
             'deskripsi'       => ['required', 'string'],
             'waktu_tindakan'  => ['required', 'date', 'before_or_equal:now'],
             'lokasi'          => ['nullable', 'string', 'max:255'],
+            'latitude'        => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude'       => ['nullable', 'numeric', 'between:-180,180'],
+            'radius_km'       => ['nullable', 'numeric', 'min:0.1'],
             'foto'            => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-    ];
+        ];
     }
 }

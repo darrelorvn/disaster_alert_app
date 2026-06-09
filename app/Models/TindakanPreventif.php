@@ -15,12 +15,18 @@ class TindakanPreventif extends Model
         'deskripsi',
         'waktu_tindakan',
         'lokasi',
+        'latitude',
+        'longitude',
+        'radius_km',
         'foto',
     ];
 
     protected $casts = [
         'user_id'        => 'integer',
         'waktu_tindakan' => 'datetime',
+        'latitude'       => 'float',
+        'longitude'      => 'float',
+        'radius_km'      => 'float',
     ];
 
     public function user()
