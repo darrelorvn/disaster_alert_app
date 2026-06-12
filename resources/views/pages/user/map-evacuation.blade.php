@@ -354,21 +354,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
-@endpush: 1
-                }).addTo(map).bindPopup('<b>Posisi Anda Saat Ini</b>').openPopup();
-
-                renderView(currentCenterLatLng);
-                map.fitBounds(geofenceCircle.getBounds(), { padding: [30, 30] });
-            },
-            function () {
-                console.warn('Akses lokasi ditolak.');
-                renderView(currentCenterLatLng);
-            }
-        );
-    } else {
-        renderView(currentCenterLatLng);
-    }
-
-});
-</script>
 @endpush
