@@ -12,6 +12,7 @@ use App\Repositories\Eloquent\DisasterReportRepository;
 use App\Repositories\Eloquent\EvacuationRouteRepository;
 use App\Repositories\Eloquent\MitigationNoteRepository;
 use App\Repositories\Eloquent\SafetyGuideRepository;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,5 +28,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        URL::forceScheme('https');
     }
 }
