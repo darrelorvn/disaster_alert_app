@@ -313,10 +313,12 @@ class UserPageController extends Controller
         }
 
         $guides = SafetyGuide::all();
+        $news = \App\Models\DisasterNews::latest()->take(5)->get();
 
         return view('pages.user.safety-guide', [
             'guides' => SafetyGuideResource::collection($guides),
-            'recommendation' => $recommendation
+            'recommendation' => $recommendation,
+            'news' => $news
         ]);
     }
 

@@ -2,36 +2,51 @@
 
 namespace App\Console\Commands;
 
-use App\Services\NewsCrawlerService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use Symfony\Component\DomCrawler\Crawler;
+use App\Models\DisasterNews;
 
 class CrawlMainstreamNews extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'news:crawl-mainstream';
+    protected $signature = 'scrape:bnpb-news';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Crawl disaster-related news from mainstream media RSS feeds';
+    protected $description = 'Crawl berita terbaru dari situs BNPB';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle(NewsCrawlerService $crawler): int
+    public function handle()
     {
-        $this->info('Starting mainstream news crawler...');
-        
-        $count = $crawler->handle();
-        
-        $this->info("Crawling completed. Added {$count} new disaster-related news articles.");
-        
-        return Command::SUCCESS;
+        $response = Http::get('https://bnpb.go.id/berita');
+
+        if ($response->successful()) {
+            $crawler = new Crawler($response->body());
+
+            $crawler->filter('.block.mb-4')->each(function (Crawler $node) {
+                try {
+                    $title = $node->filter('.title a')->text();
+                    $url = $node->filter('.title a')->attr('href');
+                    $image_url = $node->filter('.img img')->attr('src');
+
+                    if (DisasterNews::where('url', $url)->exists()) {
+                        return;
+                    }
+
+                    $detailResponse = Http::get($url);
+                    $detailCrawler = new Crawler($detailResponse->body());
+                    $summaryText = $detailCrawler->filter('p')->first()->text();
+                    $summary = Str::limit($summaryText, 200);
+
+                    DisasterNews::create([
+                        'title' => $title,
+                        'url' => $url,
+                        'image_url' => $image_url,
+                        'summary' => $summary,
+                    ]);
+                } catch (\Exception $e) {
+                }
+            });
+        }
+
+        $this->info('Proses crawling berita BNPB selesai.');
     }
 }
