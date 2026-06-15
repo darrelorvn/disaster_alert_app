@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\Officer\HealthFacilityManagementController;
 use App\Http\Controllers\Api\Officer\EvacuationRouteManagementController;
 use App\Http\Controllers\MitigationNoteController;
 use App\Http\Controllers\Web\Officer\DisasterReportManagementController;
+use App\Http\Controllers\AiRecomendationController;
+use App\Http\Controllers\AiRecomendationOfficerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -48,6 +50,9 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
 
     Route::resource('tindakan-preventif', TindakanPreventifController::class)
         ->parameters(['tindakan-preventif' => 'tindakanPreventif']);
+
+    Route::get('/rekomendasi-ai', [AiRecomendationController::class, 'index'])->name('ai-recommendation.index');
+    Route::post('/rekomendasi-ai/perbarui', [UserPageController::class, 'refreshAi'])->name('ai-recommendation.refresh');
 });
 
 /*
@@ -89,6 +94,9 @@ Route::prefix('petugas')->name('officer.')->middleware('auth')->group(function (
                 'destroy' => 'laporan.destroy',
             ]);
     });
+
+    Route::get('/rekomendasi-ai', [AiRecomendationOfficerController::class, 'index'])->name('ai-recommendation.index');
+    Route::post('/rekomendasi-ai/perbarui', [OfficerPageController::class, 'refreshAi'])->name('ai-recommendation.refresh');
 });
 
 /*

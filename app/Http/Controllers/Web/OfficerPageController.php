@@ -7,9 +7,18 @@ use App\Models\DisasterReport;
 use App\Enums\ReportStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\AiRecomendation;
+use App\Services\AiRecommendationService;
 
 class OfficerPageController extends Controller
 {
+    protected $service;
+
+    public function __construct(AiRecommendationService $service)
+    {
+        $this->service = $service;
+    }
+
     public function home(Request $request)
     {
         \App\Models\DisasterEvent::whereNotNull('expired_at')
@@ -76,13 +85,23 @@ class OfficerPageController extends Controller
                 ];
             });
 
+        $recommendation = AiRecomendation::where('user_id', auth()->id())
+            ->where('role', 'officer')
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$recommendation) {
+            $recommendation = $this->service->generateRecommendation(auth()->user());
+        }
+
         return view('pages.officer.home', compact(
             'totalReports', 
             'unhandledReports', 
             'activeAreas', 
             'latestReports', 
             'mapData',
-            'recurringDisasters'
+            'recurringDisasters',
+            'recommendation'
         ));
     }
 
@@ -94,5 +113,11 @@ class OfficerPageController extends Controller
     public function profile()
     {
         return view('pages.officer.profile');
+    }
+
+    public function refreshAi()
+    {
+        $this->service->generateRecommendation(auth()->user());
+        return redirect()->back();
     }
 }

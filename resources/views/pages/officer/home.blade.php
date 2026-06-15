@@ -6,22 +6,45 @@
 
 @section('content')
 <div class="min-h-screen bg-slate-50 p-8 font-sans text-slate-800">
-    <div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
-        <div class="flex items-center gap-2">
-            <span class="relative flex h-3 w-3">
-                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
-                <span class="relative inline-flex h-3 w-3 rounded-full bg-green-500"></span>
-            </span>
-            <span class="text-sm font-bold text-green-600">BMKG Status: Connected</span>
+    {{-- BMKG Status & Rekomendasi AI --}}
+    @if(isset($recommendation) && $recommendation)
+    <div class="mb-6 bg-orange-500 rounded-xl shadow-md p-6 text-white">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 pb-4 border-b border-orange-400">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Rekomendasi AI
+            </h2>
+            <div class="flex items-center gap-2 mt-3 md:mt-0 bg-orange-600 px-3 py-1.5 rounded-lg border border-orange-400">
+                <span class="relative flex h-3 w-3">
+                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-300 opacity-75"></span>
+                    <span class="relative inline-flex h-3 w-3 rounded-full bg-green-400"></span>
+                </span>
+                <span class="text-sm font-bold text-white tracking-wide">BMKG Status: Connected</span>
+            </div>
         </div>
-
-        <div class="flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-blue-800 border border-blue-100">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            Rekomendasi AI: Sistem beroperasi normal, pantau terus titik rawan terdeteksi.
-        </div>
+        <p class="text-orange-50 leading-relaxed">{{ $recommendation->recommendation_text }}</p>
+        <form method="POST" action="{{ route('officer.ai-recommendation.refresh') }}" class="mt-5 flex items-center gap-4">
+            @csrf
+            <button type="submit" class="px-4 py-2.5 bg-white text-orange-600 font-bold rounded-lg hover:bg-orange-50 transition shadow-sm flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Perbarui Rekomendasi
+            </button>
+            <span class="text-sm text-orange-200 font-medium">Diperbarui {{ $recommendation->generated_at->diffForHumans() }}</span>
+        </form>
     </div>
+    @else
+    <div class="mb-6 flex items-center gap-2 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <span class="relative flex h-3 w-3">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+            <span class="relative inline-flex h-3 w-3 rounded-full bg-green-500"></span>
+        </span>
+        <span class="text-sm font-bold text-green-600 tracking-wide">BMKG Status: Connected</span>
+    </div>
+    @endif
 
     {{-- Widget Statistik --}}
     <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">

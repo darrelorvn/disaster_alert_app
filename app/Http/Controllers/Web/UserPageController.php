@@ -11,9 +11,18 @@ use App\Enums\ReportStatus;
 use App\Http\Resources\SafetyGuideResource;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\AiRecomendation;
+use App\Services\AiRecommendationService;
 
 class UserPageController extends Controller
 {
+    protected $service;
+
+    public function __construct(AiRecommendationService $service)
+    {
+        $this->service = $service;
+    }
+
     public function home()
     {
         $emergencyPlaces = EmergencyPlace::whereNotNull('latitude')
@@ -50,7 +59,16 @@ class UserPageController extends Controller
                 ];
             });
 
-        return view('pages.user.home', compact('emergencyPlaces', 'evacuationRoutes'));
+        $recommendation = AiRecomendation::where('user_id', auth()->id())
+            ->where('role', 'user')
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$recommendation) {
+            $recommendation = $this->service->generateRecommendation(auth()->user());
+        }
+
+        return view('pages.user.home', compact('emergencyPlaces', 'evacuationRoutes', 'recommendation'));
     }
 
     public function mapLaporan()
@@ -285,11 +303,27 @@ class UserPageController extends Controller
 
     public function safety()
     {
+        $recommendation = AiRecomendation::where('user_id', auth()->id())
+            ->where('role', 'user')
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$recommendation) {
+            $recommendation = $this->service->generateRecommendation(auth()->user());
+        }
+
         $guides = SafetyGuide::all();
 
         return view('pages.user.safety-guide', [
-            'guides' => SafetyGuideResource::collection($guides)
+            'guides' => SafetyGuideResource::collection($guides),
+            'recommendation' => $recommendation
         ]);
+    }
+
+    public function refreshAi()
+    {
+        $this->service->generateRecommendation(auth()->user());
+        return redirect()->back();
     }
 
     public function profile()

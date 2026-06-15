@@ -2,18 +2,18 @@
 
 @section('content')
 <div class="p-8 bg-[#F8FAFC] min-h-screen">
-    
-    <div class="mb-10 bg-white rounded-2xl p-6 flex items-start border-l-[6px] border-orange-500 shadow-sm">
-        <div class="w-14 h-14 bg-orange-500 rounded-2xl flex items-center justify-center mr-5 text-white flex-shrink-0 shadow-lg shadow-orange-100">
-            <i class="fa-solid fa-robot text-2xl"></i>
-        </div>
-        <div>
-            <h2 class="text-xl font-bold text-slate-800">Rekomendasi Aman (AI)</h2>
-            <p class="text-[15px] text-slate-500 mt-1">
-                Status wilayah Anda saat ini <span class="font-bold text-orange-600 uppercase">WASPADA BANJIR</span>. Siapkan tas siaga bencana dan amankan dokumen penting ke tempat yang lebih tinngi
-            </p>
-        </div>
+    {{-- Rekomendasi AI --}}
+    @if(isset($recommendation) && $recommendation)
+    <div class="bg-orange-500 border border-slate-200 rounded-xl shadow-sm p-6 mb-6">
+        <h2 class="text-white font-bold mb-2">Rekomendasi AI</h2>
+        <p>{{ $recommendation->recommendation_text }}</p>
+        <form method="POST" action="{{ route('user.ai-recommendation.refresh') }}">
+            @csrf
+            <button type="submit" class="mt-4 px-4 py-2 bg-white text-orange-500 rounded-lg transition">Perbarui Rekomendasi</button>
+            <span class="text-sm text-white mt-4 inline-block ml-4">{{ $recommendation->generated_at->diffForHumans() }}</span>
+        </form>
     </div>
+    @endif
 
     <div class="flex flex-col lg:flex-row gap-10">
         
